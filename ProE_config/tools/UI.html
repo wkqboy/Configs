@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ProE Configuration Tool</title>
+        <meta charset="ANSI"/>
+        <style type="text/css">
+            body {
+                font-family: "Arial";
+                font-size: 14px;
+                background-color: #454545;
+                color: #ffffff;
+            }
+            .title {
+                text-align: center;
+                color: #3377aa;
+                font-size: 20px;
+                font-weight: bold;
+            }
+            .btn {
+                font-size: 12px;
+                background-color: #787878;
+                color: #ffffff;
+                padding: 4px 8px 4px 8px;
+            }
+            .browseBtn {
+                width: 50px;
+                font-size: 12px;
+                background-color: #787878;
+                color: #ffffff;
+            }
+        </style>
+    </head>
+    <body scroll = "no">
+        <table border="0" align="center">
+            <tr><td colspan="3" class="title">ProE Configuration Tool<br></td></tr>
+
+            <tr id="install1">
+                <td>安装路径1</td>
+                <td><input id="installPath1" type="text" size=35></td>
+                <td><input id="browseInstall1" class="browseBtn" type="button" value="浏览"></td>
+            </tr>
+            <tr id="install2">
+                <td>安装路径2</td>
+                <td><input id="installPath2" type="text" size=35></td>
+                <td><input id="browseInstall2" class="browseBtn" type="button" value="浏览"></td>
+            </tr>
+            <tr id="install3">
+                <td>安装路径3</td>
+                <td><input id="installPath3" type="text" size=35></td>
+                <td><input id="browseInstall3" class="browseBtn" type="button" value="浏览"></td>
+            </tr>
+            <tr id="install4">
+                <td>安装路径4</td>
+                <td><input id="installPath4" type="text" size=35></td>
+                <td><input id="browseInstall4" class="browseBtn" type="button" value="浏览"></td>
+            </tr>
+            <tr id="install5">
+                <td>安装路径5</td>
+                <td><input id="installPath5" type="text" size=35></td>
+                <td><input id="browseInstall5" class="browseBtn" type="button" value="浏览"></td>
+            </tr>
+            <tr id="install6">
+                <td>安装路径6</td>
+                <td><input id="installPath6" type="text" size=35></td>
+                <td><input id="browseInstall6" class="browseBtn" type="button" value="浏览"></td>
+            </tr>
+            <tr id="install7">
+                <td>安装路径7</td>
+                <td><input id="installPath7" type="text" size=35></td>
+                <td><input id="browseInstall7" class="browseBtn" type="button" value="浏览"></td>
+            </tr>
+            <tr id="install8">
+                <td>安装路径8</td>
+                <td><input id="installPath8" type="text" size=35></td>
+                <td><input id="browseInstall8" class="browseBtn" type="button" value="浏览"></td>
+            </tr>
+            <tr id="install9">
+                <td>安装路径9</td>
+                <td><input id="installPath9" type="text" size=35></td>
+                <td><input id="browseInstall9" class="browseBtn" type="button" value="浏览"></td>
+            </tr>
+            <!--
+            <tr><td colspan="3" align="center">
+                <input id="reduce" class="browseBtn" type="button" value="-">
+                <input id="add" class="browseBtn" type="button" value="+">
+            </td></tr>
+            -->
+
+            <tr><td colspan="3"><hr /></td></tr>
+            <tr>
+                <td>配置路径</td>
+                <td><input id="configPath" type="text" size=35></td>
+                <td><input id="browseConfig" class="browseBtn" type="button" value="浏览"></td>
+            </tr>
+
+            <tr><td colspan="3"><hr /></td></tr>
+            <tr>
+                <td>可选项</td>
+                <td colspan="2">
+                    <input id="makeBackup" type="checkbox" checked="checked">备份原有设置<br>
+                    <input id="applySup" type="checkbox" checked="checked">应用模板、颜色、图框等<br>
+                    <input id="applyPro" type="checkbox" checked="checked">应用快捷键<br>
+                    <input id="applyWin" type="checkbox" checked="checked">应用工具栏布局
+                </td>
+            </tr>
+            <tr><td colspan="3"><hr /></td></tr>
+
+            <tr><td colspan="3" align="center">
+                <input id="restore" class="btn" type="button" value="还原备份">
+                <input id="apply"  class="btn" type="button" value="应用配置">
+                <input id="cancel" class="btn" type="button" value="退出工具">
+            </td></tr>
+        </table>
+    </body>
+</html>
