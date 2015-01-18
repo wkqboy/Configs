@@ -1,0 +1,109 @@
+' BOM - volume & cog, (c) ema, lm:30.10.2009, V1
+'
+dbg=true 
+dbg=false
+'
+Language="VBSCRIPT"
+Sub CATMain()
+' ******************************* variables *******************************************
+'  CATIA.DisplayFileAlerts =false
+  Set objNetwork = CreateObject("Wscript.Network")
+  msgboxtext="BOM - volume & cog"
+' set csc = CATIA.SettingControllers
+' set visualizationSettingAtt1 = csc.Item("CATVizVisualizationSettingCtrl")
+  dim cog(2) 
+  Dim xlApp
+  err.Clear
+  On Error Resume Next
+  set xlApp = GetObject(,"EXCEL.Application")
+  if Err.Number <> 0 Then
+    Err.Clear
+    Set xlApp = CreateObject("EXCEL.Application")
+  end If
+  xlApp.Visible = True
+  xlApp.Workbooks.Add
+  if Err.Number <> 0 Then
+    msgbox "Can't open excel.",,msgboxtext
+    workbook.Close
+    xlApp.Quit
+    exit sub
+  end if
+  row=1
+  col=1
+  xlApp.Cells(1,4).Select
+  xlApp.Columns.Columns(col+0).Columnwidth = 22
+  xlApp.Columns.Columns(col+1).Columnwidth = 10
+  xlApp.Columns.Columns(col+2).Columnwidth = 10
+  xlApp.Columns.Columns(col+3).Columnwidth = 10
+  xlApp.Columns.Columns(col+4).Columnwidth = 10
+  xlApp.Cells(row,col+0).Value = msgboxtext
+'  xlApp.Cells(row,col+0).borders.LineStyle = 1
+'  xlApp.Cells(row,col+0).borders.Weight = 3
+'  xlApp.Cells(row,col+0).HorizontalAlignment = 3
+  xlApp.Cells(row,col+0).Font.Bold = true          
+  row=row+2
+  xlApp.Cells(row,col+0).Value = "Main product name: " & CATIA.ActiveDocument.name
+'  xlApp.Cells(row,col+0).borders.LineStyle = 1
+'  xlApp.Cells(row,col+0).borders.Weight = 3
+'  xlApp.Cells(row,col+0).HorizontalAlignment = 3
+  xlApp.Cells(row,col+0).Font.Bold = true          
+'  xlApp.Cells(row,col+0).Interior.ColorIndex = 40
+  row=row+2
+  xlApp.Cells(row,col+0).Value = "name"
+  xlApp.Cells(row,col+1).Value = "volume"
+  xlApp.Cells(row,col+2).Value = "X"
+  xlApp.Cells(row,col+3).Value = "Y"
+  xlApp.Cells(row,col+4).Value = "Z"
+  xlApp.Cells(row,col+0).HorizontalAlignment = 3
+  xlApp.Cells(row,col+1).HorizontalAlignment = 3
+  xlApp.Cells(row,col+2).HorizontalAlignment = 3
+  xlApp.Cells(row,col+3).HorizontalAlignment = 3
+  xlApp.Cells(row,col+4).HorizontalAlignment = 3
+  xlApp.Cells(row,col+0).Font.Bold = true
+  xlApp.Cells(row,col+1).Font.Bold = true
+  xlApp.Cells(row,col+2).Font.Bold = true
+  xlApp.Cells(row,col+3).Font.Bold = true
+  xlApp.Cells(row,col+4).Font.Bold = true
+  row=row+1
+
+' ******************************* test if product is open *****************************
+  If CATIA.Documents.Count = 0 Then
+    MsgBox "There is no CATIA Documents open. Open a Product file and run this script again.", ,msgboxtext
+    Exit Sub
+  End If
+  If InStr(CATIA.ActiveDocument.Name, ".CATProduct") < 1 Then
+    MsgBox "Active CATIA Document is not a Product. Open a Product file and run this script again.", ,msgboxtext
+    Exit Sub
+  End If
+' ******************************* go **************************************************
+  set cad=CATIA.ActiveDocument
+  Set spa=cad.GetWorkbench("SPAWorkbench")
+  set docs=CATIA.Documents
+  set prod = cad.Product
+  set prods = prod.Products
+  for i=1 to prods.count
+    prods.item(i).Analyze.GetGravityCenter cog
+    vol=prods.item(i).Analyze.Volume
+    prtNum =prods.Item(i).PartNumber
+'    msgbox "Name: " & prtNum & " Volume:" & vol & " COG: " & join(cog)
+    xlApp.Cells(row,col+0).Value = prtNum
+    xlApp.Cells(row,col+1).Value = vol
+    xlApp.Cells(row,col+2).Value = cog(0)
+    xlApp.Cells(row,col+3).Value = cog(1)
+    xlApp.Cells(row,col+4).Value = cog(2)
+    row=row+1
+  next
+
+'prtNum =prods.Item(2).PartNumber
+'prtName=prods.Item(2).Name
+'msgbox prtName & "/!" & prtName
+'Set reference1 = prod.CreateReferenceFromName(prtNum & "/!" & prtName & "/" )
+'set M0=spa.GetMeasurable(reference1)
+'vol=M0.Volume 
+'msgbox vol
+
+'  msgbox "end of execution." ,,msgboxtext
+' *************************************************************************************
+' ******************************* E  N  D *********************************************
+' *************************************************************************************
+End Sub

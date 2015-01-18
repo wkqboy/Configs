@@ -1,0 +1,950 @@
+﻿'------------------------------------------------------------------------------
+' BOM Generator for CATIA V3.3
+' (c)WKQ
+' wkqboy@gmail.com
+' 2014.07.03
+'------------------------------------------------------------------------------
+Language="VBScript"
+
+'------------------------------- Options --------------------------------------
+gTitleBgColor       = 33            '44
+gContentBgColor     = 34            '36
+gLevelOneBgColor    = 35            '45
+gFontName           = "微软雅黑"
+gFontSize           = 10
+gHighlightLevelOne  = true
+gLevelDeepth        = 6             'should>=product's deepest level
+
+'--------------------------------  table defintion ----------------------------
+const KW_INDEX      = "Index"
+const KW_LEVEL      = "Level"
+const KW_PN         = "PartNumber"  'key word 必选参数'
+const KW_QTY        = "Q'ty"
+const KW_TYPE       = "Type"        'for hide item'
+
+gIndexCol           = 0
+gLevelOneCol        = 0
+gPnCol              = 0
+gQtyCol             = 0
+gTypeCol            = 0
+
+const gPropNameRow      = 4     'save property's name
+const gPropDefValRow    = 5     'save property's default value
+const gColWidthRow      = 6     'save column's width of excel
+const gAlignmentRow     = 7     'save column's alignment
+
+gReservedColNum     = 1 + gLevelDeepth
+gReservedRowNum     = 4
+
+valueSpliter        = "="
+propSpliter         = vbNewLine
+
+dim gTableDef()                 'MUST stay at the last position?
+dim gExtraProps()
+
+'---------------------------- initional global data ---------------------------
+sub initGlobalData()
+    maxPropNum = 100
+    maxCol = max(gReservedColNum + 9, maxPropNum + gLevelDeepth - 1)
+    redim gTableDef(7, maxCol)
+    redim gExtraProps(2, 100)
+
+    gExtraProps(1, 1) = ""
+    gExtraProps(2, 1) = ""
+    'gExtraProps(1, 2) = ""
+    'gExtraProps(2, 2) = ""
+    '------------------------------- table header -----------------------------
+    gTableDef(1, 1) = "结构件清单"
+    gTableDef(2, 1) = "Mechanical Part List"
+
+    gTableDef(1, gReservedColNum + 2) = "项目编号"
+    gTableDef(2, gReservedColNum + 2) = "ProjectCode"
+
+    gTableDef(1, gReservedColNum + 3) = "产品名称"
+    gTableDef(2, gReservedColNum + 3) = "ProductName"
+
+    gTableDef(1, gReservedColNum + 4) = "配置名称"
+    gTableDef(2, gReservedColNum + 4) = "默认配置"
+
+    gTableDef(1, gReservedColNum + 5) = "外观设计"
+    gTableDef(2, gReservedColNum + 5) = "IDesigner"
+
+    gTableDef(1, gReservedColNum + 7) = "结构设计"
+    gTableDef(2, gReservedColNum + 7) = "MDesigner"
+
+    gTableDef(1, gReservedColNum + 8) = "更新日期"
+    gTableDef(2, gReservedColNum + 8) = "UpdateDate"
+
+    gTableDef(1, gReservedColNum + 9) = "文件位置"
+    gTableDef(2, gReservedColNum + 9) = "见页脚"
+
+    gTableDef(1, gReservedColNum + 10) = "版本"
+    gTableDef(2, gReservedColNum + 10) = "Version"
+
+    '------------------------------- added Properties -------------------------
+    gTableDef(3,1) = "序号"      'property name in chinese also shown in excel
+    gTableDef(4,1) = KW_INDEX    'property name also shown in excel, Mandatory
+    gTableDef(5,1) = 1           'property default value
+    gTableDef(6,1) = 6           'column width of excel
+    gTableDef(7,1) = 2           'alignment of data, 2: left; 3: center
+
+    gTableDef(3,2) = "组装等级"
+    gTableDef(4,2) = KW_LEVEL
+    gTableDef(5,2) = "O"
+    gTableDef(6,2) = 2
+    gTableDef(7,2) = 3
+
+    '-------------------------------------------------leave above as what it is
+    gTableDef(3, gReservedColNum + 1) = "物料编号"
+    gTableDef(4, gReservedColNum + 1) = "Code"
+    gTableDef(5, gReservedColNum + 1) = "00-000-000"
+    gTableDef(6, gReservedColNum + 1) = 11
+    gTableDef(7, gReservedColNum + 1) = 3
+
+    gTableDef(3, gReservedColNum + 2) = "尺寸图号"
+    gTableDef(4, gReservedColNum + 2) = "DwgCode"
+    gTableDef(5, gReservedColNum + 2) = "00-000-000"
+    gTableDef(6, gReservedColNum + 2) = 11
+    gTableDef(7, gReservedColNum + 2) = 3
+
+    gTableDef(3, gReservedColNum + 3) = "物料名称"
+    gTableDef(4, gReservedColNum + 3) = "Name"
+    gTableDef(5, gReservedColNum + 3) = "中文名"
+    gTableDef(6, gReservedColNum + 3) = 12
+    gTableDef(7, gReservedColNum + 3) = 2
+
+    gTableDef(3, gReservedColNum + 4) = "零件号"
+    gTableDef(4, gReservedColNum + 4) = KW_PN
+    gTableDef(5, gReservedColNum + 4) = ""
+    gTableDef(6, gReservedColNum + 4) = 22
+    gTableDef(7, gReservedColNum + 4) = 2
+
+    gTableDef(3, gReservedColNum + 5) = "用量"
+    gTableDef(4, gReservedColNum + 5) = KW_QTY
+    gTableDef(5, gReservedColNum + 5) = ""
+    gTableDef(6, gReservedColNum + 5) = 5
+    gTableDef(7, gReservedColNum + 5) = 3
+
+    gTableDef(3, gReservedColNum + 6) = "材质\规格"
+    gTableDef(4, gReservedColNum + 6) = "Material"
+    gTableDef(5, gReservedColNum + 6) = "PC"
+    gTableDef(6, gReservedColNum + 6) = 12
+    gTableDef(7, gReservedColNum + 6) = 2
+
+    gTableDef(3, gReservedColNum + 7) = "描述"
+    gTableDef(4, gReservedColNum + 7) = "Description"
+    gTableDef(5, gReservedColNum + 7) = "颜色、工艺等"
+    gTableDef(6, gReservedColNum + 7) = 18
+    gTableDef(7, gReservedColNum + 7) = 2
+
+    gTableDef(3, gReservedColNum + 8) = "供应商"
+    gTableDef(4, gReservedColNum + 8) = "Supplier"
+    gTableDef(5, gReservedColNum + 8) = ""
+    gTableDef(6, gReservedColNum + 8) = 10
+    gTableDef(7, gReservedColNum + 8) = 2
+
+    gTableDef(3, gReservedColNum + 9) = "备注"
+    gTableDef(4, gReservedColNum + 9) = "Remarks"
+    gTableDef(5, gReservedColNum + 9) = ""
+    gTableDef(6, gReservedColNum + 9) = 15
+    gTableDef(7, gReservedColNum + 9) = 2
+
+    gTableDef(3, gReservedColNum + 10) = "类型"
+    gTableDef(4, gReservedColNum + 10) = KW_TYPE
+    gTableDef(5, gReservedColNum + 10) = "物料"
+    gTableDef(6, gReservedColNum + 10) = 8
+    gTableDef(7, gReservedColNum + 10) = 3
+
+    gIndexCol       = searchRow(KW_INDEX, gTableDef, gPropNameRow)
+    gLevelOneCol    = searchRow(KW_LEVEL, gTableDef, gPropNameRow)
+    gPnCol          = searchRow(KW_PN, gTableDef, gPropNameRow)
+    gQtyCol         = searchRow(KW_QTY, gTableDef, gPropNameRow)
+    gTypeCol        = searchRow(KW_TYPE, gTableDef, gPropNameRow)
+end sub
+
+'========================================================================== DRY
+function getObj(str)
+    objName = str
+    select case str
+        case "FSO"
+            objName = "Scripting.FileSystemObject"
+        case "SHELL"
+            objName = "Shell.Application"
+        case "WSHELL"
+            objName = "Wscript.Shell"
+        case "EXCEL"
+            objName = "Excel.Application"
+        case "WORD"
+            objName = "Word.Application"
+        case "PPT"
+            objName = "PowerPoint.Application"
+        case "IE"
+            objName = "InternetExplorer.Application"
+        case default
+            'objName = str
+    end select
+
+    err.clear
+    on error resume next
+    set getObj = getObject( ,objName)
+    if err.number <> 0 then
+        err.clear
+        set getObj = createObject(objName)
+    end if
+    if err.number <> 0 then
+        err.clear
+        set getObj = nothing
+    end if
+end function
+
+'------------------------------------------------------------------------------
+function max(a, b)
+    max = a
+    if b>a then
+        max = b
+    end if
+end function
+
+'------------------------------------------------------------------------------
+function colName (index)
+    const digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    ary = len(digits) + 1
+
+    if index <= 0 then
+        colName = ""
+    elseif index < ary then
+        colName = mid(digits, index, 1)
+    else
+        colName = colName(index\(ary-1)) & mid(digits, (index mod (ary-1)), 1)
+    end if
+end function
+
+'------------------------------------------------------------------------------
+' return the index of the propName's value or 0
+function findProp(str, propName)
+    findProp = 0
+
+    index = inStr(1, str, propName)
+    if index > 0 then 'propName found
+        vsIndex = inStr(index+len(propName), str, valueSpliter)
+        psIndex = inStr(index+len(propName), str, propSpliter)
+        if (vsIndex > 0) and ((psIndex>vsIndex) or (psIndex<=0)) then
+            if trim(mid(str, index, vsIndex-index)) = propName then
+                findProp = vsIndex + len(valueSpliter)
+            end if
+        end if
+    end if
+end function
+
+'------------------------------------------------------------------------------
+' set the propName's value as val. if not found add it
+function setPropValue(str, propName, val)
+    index = findProp(str, propName)
+    if index > 0 then 'property found
+        leftStr = left(str, index-1)
+        psIndex = inStr(index, str, propSpliter)
+        if psIndex < 1 then
+            psIndex = len(str) + 1
+        end if
+        rightStr = right(str, len(str)-psIndex+1)
+
+        str = leftStr & val & rightStr
+    end if
+
+    setPropValue = str
+end function
+
+'------------------------------------------------------------------------------
+' return the propName's value if found, otherwise return empty
+function getPropValue(str, propName)
+    getPropValue = empty
+
+    index = findProp(str, propName)
+    if index > 0 then 'property found
+        psIndex = inStr(index, str, propSpliter)
+        if psIndex <= 0 then
+            psIndex = len(str) + 1
+        end if
+
+        getPropValue = mid(str, index, psIndex-index)
+    end if
+end function
+
+'------------------------------------------------------------------------------
+class CATProdParser
+    private mCount, mOutOfBoundary, _
+            mLevelCol, mIndexCol, mPnCol, mQtyCol, mObjCol, _
+            mExtraCol, mExtraProps, _
+            table()
+
+    '--------------------------------------------'
+    property get count
+        count = mCount
+    end property
+
+    '--------------------------------------------'
+    property get level(row)
+        ret = 0
+        if row >= 1 and row <= mCount and _
+           mLevelCol>=1 and mLevelCol<=ubound(table, 2) then
+            ret = table(row, mLevelCol)
+        end if
+        level = ret
+    end property
+
+    '--------------------------------------------'
+    property get index(row)
+        ret = 0
+        if row >= 1 and row <= mCount and _
+           mIndexCol>=1 and mIndexCol<=ubound(table, 2) then
+            ret = table(row, mIndexCol)
+        end if
+        index = ret
+    end property
+
+    '--------------------------------------------'
+    property get pn(row)
+        ret = empty
+        if row >= 1 and row <= mCount and _
+           mPnCol>=1 and mPnCol<=ubound(table, 2) then
+            ret = table(row, mPnCol)
+        end if
+        pn = ret
+    end property
+
+    '--------------------------------------------'
+    property get qty(row)
+        ret = 0
+        if row >= 1 and row <= mCount and _
+           mIndexCol>=1 and mIndexCol<=ubound(table, 2) then
+            ret = table(row, mQtyCol)
+        end if
+        qty = ret
+    end property
+
+    '--------------------------------------------'
+    property get prod(row)
+        set ret = nothing
+        if row >= 1 and row <= mCount and _
+           mObjCol>=1 and mObjCol<=ubound(table, 2) then
+            set ret = table(row, mObjCol)
+        end if
+        set prod = ret
+    end property
+
+   '--------------------------------------------'
+    property get extra(row)
+        set ret = empty
+        if row >= 1 and row <= mCount and _
+           mExtraCol>=1 and mExtraCol<=ubound(table, 2) then
+            ret = table(row, mExtraCol)
+        end if
+        extra = ret
+    end property
+
+   '--------------------------------------------'
+    property let extra(row, val)
+        if row >= 1 and row <= mCount and _
+           mExtraCol>=1 and mExtraCol<=ubound(table, 2) then
+            table(row, mExtraCol) = val
+        end if
+    end property
+
+   '--------------------------------------------'
+    property let extraProps(props)
+        if isArray(props) then
+            if ubound(props, 1)>=2 and ubound(props, 2)>=1 then
+                mExtraProps = props
+            end if
+        end if
+    end property
+
+   '--------------test if the prod is a assembly
+    private function isAssembly(prod)
+        isAssembly = false
+        if prod.Products.Count > 0 then
+            isAssembly = true
+        end if
+    end function
+
+    '--------------------------------------------'
+    private sub doParse(prod, level)
+        startRow = mCount + 1
+        currIndex = 1
+
+        for i=1 to prod.Products.count
+            set currProd = prod.Products.item(i)
+            foundRepeat = false
+            '-------------------------------------------------------find repeat
+            for r=startRow to mCount
+                if table(r, mPnCol) = currProd.PartNumber and _
+                   table(r, mLevelCol) = level then
+                    table(r, mQtyCol) = table(r, mQtyCol) + 1
+                    foundRepeat = true
+                    exit for
+                end if
+            next
+
+            '------------------------------record currProd to tab's current row
+            if not foundRepeat then
+                if isArray(mExtraProps) then
+                    for iProp=1 to ubound(mExtraProps, 2)
+                        if mExtraProps(1, iProp) = "" then
+                            exit for
+                        end if
+                        if isEmpty(getURP(currProd, mExtraProps(1, iProp))) then
+                            setURP currProd, mExtraProps(1, iProp), mExtraProps(2, iProp)
+                        end if
+                    next
+                end if
+
+                if lCase(getURP(currProd, KW_TYPE))<>"hide" then
+                    if mCount < ubound(table, 1) then
+                        table(mCount + 1, mLevelCol) = level
+                        table(mCount + 1, mIndexCol) = currIndex
+                        table(mCount + 1, mPnCol)    = currProd.PartNumber
+                        table(mCount + 1, mQtyCol)   = 1
+                        set table(mCount+1, mObjCol) = currProd
+
+                        currIndex = currIndex + 1
+                        mCount = mCount + 1
+
+                        if isAssembly(currProd) then
+                            call doParse(currProd, level + 1)
+                        end if
+                    else
+                        mOutOfBoundary = true
+                        exit sub
+                    end if
+                end if 'not hide
+            end if 'not found repeat
+        next
+    end sub
+
+    '--------------------------------------------'
+    sub parse(prod)
+        mCount = 0
+        mOutOfBoundary  = false
+        prod.applyWorkMode(DESIGN_MODE)
+        call doParse(prod, 1)
+        if mOutOfBoundary then
+            msgbox "Too many data!"&vbNewLine& _
+                    "(The maximum data number is: "&ubound(table,1)&")"
+        end if
+    end sub
+
+    '--------------------------------------------'
+    function searchProd(pn)
+        set searchProd = nothing
+        if pn <> "" then
+            for row=1 to mCount
+                if table(row, mPnCol) = pn then
+                    set searchProd = table(row, mObjCol)
+                    exit for
+                end if
+            next
+        end if
+    end function
+
+    '--------------------------------------------'
+    function getIndexStr(theRow)
+        str = ""
+        if (theRow >= 1) and (theRow <= mCount) then
+            row=theRow
+            finishedL = table(row, mLevelCol)+1
+            while table(row, mLevelCol) > 1
+                if table(row, mLevelCol) = finishedL-1 then
+                    str = "."&table(row, mIndexCol) & str
+                    finishedL = table(row, mLevelCol)
+                end if
+                row = row - 1
+            wend
+            str = table(row, mIndexCol) & str
+        end if
+        getIndexStr = str
+    end function
+
+    '--------------------------------------------'
+    function getURP(prod, propName)
+        getURP = empty
+
+        if propName <> "" then
+            set urps = prod.ReferenceProduct.UserRefProperties
+            for i=1 To urps.Count
+                propStr = urps.item(i).ValueAsString
+                'msgbox propStr&"|"&propName&"|"&findProp(propStr, propName)
+                valIndex   = findProp(propStr, propName)
+                if valIndex > 0 then 'property found
+                    getURP = getPropValue(propStr, propName)
+                    exit for
+                end if
+            next
+        end if
+    end function
+
+    '--------------------------------------------'
+    function setURP(prod, propName, val)
+        setURP = empty
+
+        if propName <> "" then
+            set urps = prod.ReferenceProduct.UserRefProperties
+            propFound = false
+            for i=1 To urps.Count
+                propStr = urps.item(i).ValueAsString
+                valIndex   = findProp(propStr, propName)
+                if valIndex > 0 then 'property found
+                    urps.item(i).valuateFromString (setPropValue(propStr, propName, val))
+                    propFound = true
+                    exit for
+                end if
+            next
+
+            if not propFound then
+                urps.CreateString propName, propName&valueSpliter&val
+            end if
+
+            setURP = val
+        end if
+    end function
+
+    '--------------------------------------------'
+    sub clearURP(prod)
+        set urps = prod.ReferenceProduct.UserRefProperties
+        while urps.Count > 0
+            urps.remove(1)
+        wend
+    end sub
+
+    '--------------------------------------------'
+    private sub class_initialize
+        mCount      = 0
+        mLevelCol   = 1
+        mIndexCol   = 2
+        mPnCol      = 3
+        mQtyCol     = 4
+        mObjCol     = 5
+        mExtraCol   = 6
+
+        redim table (1000, 6)
+    end sub
+
+    '--------------------------------------------'
+    private sub class_terminate
+        for i=1 to ubound(table,1)
+            set table(i, mObjCol) = nothing
+        next
+    end sub
+end class
+
+'------------------------------------------------------------------------------
+function infoBox(text)
+    infoBox = msgbox(text, vbInformation, "信息")
+end function
+
+function yesNoBox(text)
+    yesNoBox = msgbox(text, vbYesNo + vbQuestion, "请选择")
+end function
+
+function yesNoCancelBox(text)
+    yesNoCancelBox = msgbox(text, vbYesNoCancel + vbQuestion, "请选择")
+end function
+
+function warringBox(text)
+    warringBox = msgbox(text, vbExclamation, "警告")
+end function
+
+function errorBox(text)
+    errorBox = msgbox(text, vbCritical, "错误")
+end function
+
+'========================================================================== DRY
+' search the value in the given row of the table
+' return column number if found or 0 if not
+function searchRow (value, table, row)
+    ret = 0
+    if row>=lbound(table, 1) and row<=ubound(table, 1) then
+        for col=lbound(table, 2) to uBound(table, 2)
+            if table(row, col) = value then
+            'if inStr(1, table(row, col), value) > 0 then
+                ret = col
+                exit for
+            end if
+        next
+    end if
+    searchRow = ret
+end function
+
+'------------------------------------------------------------------------------
+function getExcelForWrite(pn)
+    set xlApp = getObj("EXCEL")
+    if xlApp is nothing then
+        infoBox "Failed to start EXCEL! Please run EXCEL manually."
+        set getExcelForWrite = nothing
+        exit function
+    end if
+
+    opend = false
+    col = searchRow("ProductName", gTableDef, 2)
+    if col>0 then
+        for i=1 to xlApp.WorkBooks.count
+            set wb = xlApp.WorkBooks(i)
+            if wb.ActiveSheet.Cells(2, col).value = pn then
+                wb.Activate
+                opend = true
+                exit for
+            end if
+        next
+    end if
+
+    if not opend then
+        err.clear
+        xlApp.Workbooks.Add
+        if err.Number <> 0 then
+            warringBox "Can't open excel."
+        end if
+    end if
+    'xlApp.Visible = true
+    set getExcelForWrite = xlApp
+end function
+
+'==============================================================================
+sub extractBom(rootProd)
+    if gPnCol<1 or gQtyCol<1 or gTypeCol<1 or gIndexCol<1 or gLevelOneCol<1 then
+        errorBox "Invalid BOM defintion"
+        exit sub
+    end if
+
+    today     = DatePart("yyyy", Now)&"."&_
+                DatePart("m", Now)&"."&_
+                DatePart("d", Now)
+    colNum    = 1
+    do while colNum<=ubound(gTableDef, 2)
+        if gTableDef(4, colNum)="" and colNum>=gLevelOneCol+gLevelDeepth then
+            colNum = colNum - 1
+            exit do
+        end if
+        colNum = colNum + 1
+    loop
+
+    xlLastColName  = colName(colNum)
+    xlDataStartRow = gReservedRowNum + 1
+
+    set xlApp  = getExcelForWrite(rootProd.PartNumber)
+    if xlApp is nothing then
+        exit sub
+    end if
+    xlApp.Visible = false
+    excelTable = xlApp.ActiveSheet.UsedRange.Value
+
+    '----------------------------------------------------------- clear old data
+    oldMaxRow = 0
+    if isArray(excelTable) then
+        oldMaxRow = ubound(excelTable, 1)
+    end if
+    if oldMaxRow > 0 then
+        xlApp.Rows((1)&":"&oldMaxRow).Delete
+    end if
+
+    '------------------------------------------------------------------ prepair
+    set pp = new CATProdParser
+    pp.extraProps = gExtraProps
+    pp.parse(rootProd)
+
+    blankRow = xlDataStartRow + pp.count
+
+    totalRange  = "A1:"&xlLastColName&blankRow
+    h1Range     = "A1:"&xlLastColName&(1)
+    h2Range     = "A2:"&xlLastColName&(2)
+    h3Range     = "A3:"&xlLastColName&(3)
+    h4Range     = "A4:"&xlLastColName&(4)
+    headerRange = "A1:"&xlLastColName&(4)
+    dataRange   = "B"&xlDataStartRow&":"&xlLastColName&(blankRow - 1)
+    blankRange  = "A"&blankRow&":"&xlLastColName&blankRow
+    indexRange  = colName(gIndexCol)&xlDataStartRow&":"&colName(gIndexCol)&(blankRow - 1)
+
+    xlApp.Range(totalRange).Font.Name = gFontName
+    xlApp.Range(totalRange).Font.Size = gFontSize
+    xlApp.Range(totalRange).Borders.LineStyle = 1
+    xlApp.Range(dataRange).ShrinkToFit = true
+
+    '--------------------------------------- setup columns' width and alignment
+    for col=1 to colNum
+        if col>=gLevelOneCol and col<=gLevelOneCol + gLevelDeepth - 1 then
+            xlApp.Columns(col).ColumnWidth = gTableDef(gColWidthRow, gLevelOneCol)
+            xlApp.Columns(col).HorizontalAlignment = gTableDef(gAlignmentRow, gLevelOneCol)
+
+        else
+            xlApp.Columns(col).ColumnWidth = gTableDef(gColWidthRow, col)
+            xlApp.Columns(col).HorizontalAlignment = gTableDef(gAlignmentRow, col)
+        end if
+    next
+
+    'header format
+    xlApp.Range(h1Range).Font.Bold = true
+    xlApp.Range("A1").Font.Size = gFontSize + 2
+    xlApp.Range("A1").Borders(4).LineStyle = 0
+    xlApp.Range("A2").Borders(3).LineStyle = 0
+    xlApp.Range(h2Range).Font.ColorIndex = 2
+    xlApp.Range(h3Range).Font.Bold = true
+    xlApp.Range(h4Range).Font.ColorIndex = 2
+    xlApp.Range(headerRange).Interior.ColorIndex = gTitleBgColor
+    xlApp.Range(headerRange).HorizontalAlignment = 3
+    xlApp.Range(h3Range).Borders(3).LineStyle = 9
+    xlApp.Range(h3Range).Borders(4).LineStyle = 0
+    xlApp.Range(h4Range).Borders(3).LineStyle = 0
+
+    '------------------------------------------------------------- write header
+    for row=1 to 4
+        startCol = 1
+        endCol   = 1
+        for col=1 to colNum
+            'header: write value'
+            if row = 4 then
+                if not (col>gLevelOneCol and col<=gLevelOneCol + gLevelDeepth - 1) then
+                    xlApp.Cells(row, col) = "("&gTableDef(row, col)&")"
+                end if
+            else
+                if gTableDef(row, col) = "ProductName" then
+                    xlApp.Cells(row, col) = rootProd.PartNumber
+
+                elseif gTableDef(row, col) = "ProjectCode" then
+                    xlApp.Cells(row, col) = "ProjCode"
+
+                elseif gTableDef(row, col) = "MDesigner" then
+                    xlApp.Cells(row, col) = "WKQ"
+
+                elseif gTableDef(row, col) = "UpdateDate" then
+                    xlApp.Cells(row, col) = today
+
+                elseif gTableDef(row, col) = "Version" then
+                    xlApp.Cells(row, col).NumberformatLocal = "@"
+                    xlApp.Cells(row, col) = rootProd.Revision
+
+                else
+                    xlApp.Cells(row, col) = gTableDef(row, col)
+                end if
+            end if
+            'header: cells merge'
+            if gTableDef(row, col) <> "" then
+                startCol = col
+            else
+                endCol = col
+            end if
+            if endCol>startCol then
+                xlApp.range(colName(startCol)&row&":"&colName(endCol)&row).merge
+            end if
+        next
+    next
+
+    '---------------------------------------------------------------- fill data
+    for row=1 to pp.count
+        'data rows color'
+        excelR = xlDataStartRow + row - 1
+        if gHighlightLevelOne and pp.level(row)=1 then
+            xlApp.Range("A"&excelR&":"&xlLastColName&excelR).Interior.ColorIndex = gLevelOneBgColor
+        else
+            xlApp.Range("A"&excelR&":"&xlLastColName&excelR).Interior.ColorIndex = gContentBgColor
+        end if
+
+        for col=1 to colNum
+            if col = gIndexCol then
+                xlApp.Cells(row + xlDataStartRow - 1, col).NumberformatLocal = "@"
+                'xlApp.Cells(row + xlDataStartRow - 1, col).Font.Bold = true
+                xlApp.Cells(row + xlDataStartRow - 1, col) = " " & pp.getIndexStr(row)
+
+            elseif col>=gLevelOneCol and col<=gLevelOneCol + gLevelDeepth - 1 then
+                'xlApp.Cells(row + xlDataStartRow - 1, gLevelOneCol + pp.level(row) - 1) _
+                    '.Font.Bold = true
+
+                xlApp.Cells(row + xlDataStartRow - 1, gLevelOneCol + pp.level(row) - 1) = _
+                    gTableDef(gPropDefValRow, gLevelOneCol)
+
+            elseif col = gPnCol then
+                xlApp.Cells(row + xlDataStartRow - 1, col).Font.ColorIndex = 16
+                xlApp.Cells(row + xlDataStartRow - 1, col) = pp.pn(row)
+
+            elseif col = gQtyCol then
+                xlApp.Cells(row + xlDataStartRow - 1, col).Font.ColorIndex = 16
+                xlApp.Cells(row + xlDataStartRow - 1, col) = pp.qty(row)
+
+            else
+                propName = gTableDef(gPropNameRow, col)
+                val = pp.getURP(pp.prod(row), propName)
+                if isEmpty(val) then
+                    val = gTableDef(gPropDefValRow, col)
+                    call pp.setURP(pp.prod(row), gTableDef(gPropNameRow, col), val)
+                end if
+                xlApp.Cells(row + xlDataStartRow - 1, col) = val
+
+                if inStr(1, val, "N/A") or val = "-" or val = "\" then
+                    xlApp.Cells(row + xlDataStartRow - 1, col).Font.ColorIndex = 16
+                elseif left(val, 2) = "注:" then
+                    xlApp.Cells(row + xlDataStartRow - 1, col).Font.ColorIndex = 3
+                end if
+            end if
+        next
+    next
+    xlApp.Range(indexRange).HorizontalAlignment = gTableDef(gAlignmentRow, gIndexCol)
+    xlApp.Range(indexRange).Interior.ColorIndex = gTitleBgColor
+
+    '---------------------------------------------------------- write blank row
+    xlApp.Range(blankRange).Interior.ColorIndex = gTitleBgColor
+    xlApp.Range(blankRange).HorizontalAlignment = 3
+    xlApp.Cells(blankRow, 1) = "- 以下空白 -"
+    xlApp.range("A"&blankRow&":"&xlLastColName&blankRow).merge
+
+    '--------------------------------------------------------setup excel format
+    xlApp.Visible = true
+    infoBox "成功抽取"&pp.count&"项数据!"
+end sub
+
+'==============================================================================
+sub updateProd(rootProd)
+    rootProd.applyWorkMode(DESIGN_MODE)
+
+    pn = rootProd.PartNumber
+    prodNameCol = searchRow("ProductName", gTableDef, 2)
+    bn = empty
+
+    if prodNameCol < 1 then
+        errorBox "模板无效:在第2行中未发现ProductName参数!"
+        exit sub
+    end if
+
+    set xlApp = getObj("EXCEL")
+
+    if xlApp.WorkBooks.count < 1 then
+        warringBox "请先打开BOM文件!"
+        exit sub
+    end if
+
+    for i=1 to xlApp.WorkBooks.count
+        set wb = xlApp.WorkBooks(i)
+        excelTable = wb.ActiveSheet.UsedRange.Value
+        if isArray(excelTable) then
+            if ubound(excelTable, 1)>=2 and ubound(excelTable, 2)>=prodNameCol then
+                bn = excelTable(2, prodNameCol)
+                if bn = pn then
+                    wb.Activate
+                    exit for
+                end if
+            end if
+        end if
+    next
+
+    excelTable = xlApp.ActiveSheet.UsedRange.Value
+    if isEmpty(excelTable) or not isArray(excelTable) then
+        warringBox "BOM文件无效:内容为空或单个值!"
+        exit sub
+    end if
+
+    xlRowNum   = ubound(excelTable, 1)
+    xlColNum   = ubound(excelTable, 2)
+    if xlRowNum < 5 or xlColNum < 2 then
+        warringBox "BOM文件无效:行数或列数太少"&vbNewLine&_
+                   " ("&xlRowNum&" X "&xlColNum&")"
+        exit sub
+    end if
+
+    xlPnCol = searchRow(KW_PN, excelTable, 4)
+    if xlPnCol < 1 then
+        xlPnCol = searchRow("("&KW_PN&")", excelTable, 4)
+        if xlPnCol < 1 then
+            warringBox "BOM文件无效:没有在第4行发现PartNumber参数"
+            exit sub
+        end if
+    end if
+
+    if bn <> pn then
+        text = "产品名称不一致!"&vbNewLine&_
+               "("&bn&") != ("&pn&")"&vbNewLine&_
+               "一定要更新吗?"
+        if vbYes <> yesNoBox(text) then
+            exit sub
+        end if
+    end if
+
+    '--------------------------------------------------------------------------
+    set pp = new CATProdParser
+    pp.parse(rootProd)
+
+    updatedCount = 0
+    xlDataStartRow = gReservedRowNum + 1
+    redim updatedPN(1, ubound(excelTable, 1) - xlDataStartRow + 1)
+
+    for row=xlDataStartRow to ubound(excelTable, 1)
+        currPN = excelTable(row, xlPnCol)
+
+        updated = false
+        if searchRow(currPN, updatedPN, 1) > 0 then
+            updated = true
+        end if
+
+        if not updated then
+            set currProd = pp.searchProd(currPN)
+            if not (currProd is nothing) then
+                for col=1 to uBound(excelTable, 2)
+                    name = trim(excelTable(4, col))
+                    if left(name, 1) = "(" then
+                        name = trim(right(name, len(name)-1))
+                    end if
+                    if right(name, 1) = ")" then
+                        name = trim(left(name, len(name)-1))
+                    end if
+                    if name<>KW_PN    and name<>KW_QTY and _
+                       name<>KW_LEVEL and name<>KW_INDEX then
+                        val  = excelTable(row, col)
+                        pp.setURP currProd, name, val
+                    end if
+                next
+                updatedCount = updatedCount + 1
+                updatedPN(1, updatedCount) = currPN
+            end if
+        end if
+    next
+
+    infoBox "成功更新"&updatedCount&"项数据!"
+end sub
+
+'======================================================================main sub
+sub CATMain()
+
+    if CATIA.Windows.Count<1 then
+        infoBox "请打开一个产品!"
+        exit sub
+    elseif right(CATIA.ActiveDocument.Name, 11) <> ".CATProduct" then
+        infoBox "当前文档不是一个产品文档!"
+        exit sub
+    end if
+
+    set rootProd = CATIA.ActiveDocument.Product
+    set selected = CATIA.ActiveDocument.Selection
+    if selected.Count = 1 then
+        if selected.item(1).Type = "Product" then
+            set rootProd = selected.item(1).LeafProduct
+        end if
+    end if
+
+    if rootProd.Products.Count<1 then
+        infoBox "产品为空,没有数据可提取!"
+        exit sub
+    end if
+
+    initGlobalData()
+
+    chosen = msgbox("操作对象: ("&rootProd.PartNumber&")"&vbNewLine&vbNewLine& _
+                    "[是] --> 提取BOM到EXCEL"&vbNewLine& _
+                    "[否] --> 更新EXCEL数据到图档",_
+                    vbYesNoCancel+vbQuestion, "请选择")
+
+    select case chosen
+        case vbYes
+            extractBom(rootProd)
+        case vbNo
+            updateProd(rootProd)
+        case else
+            exit sub
+    end select
+
+end sub
+'=====================================================================main over

@@ -1,0 +1,75 @@
+﻿'------------------------------------------------------------------------------
+' Body to product for CATIA
+' (c)WKQ
+' wkqboy@gmail.com
+' 2014.08.06
+'------------------------------------------------------------------------------
+Language="VBSCRIPT"
+
+'==============================================================================
+function part2product(doc)
+    set bodies  = CATIA.Documents.item(doc.Name).Part.Bodies
+    set prodDoc = CATIA.Documents.Add("Product")
+        prodDoc.Product.Products.AddExternalComponent(doc)
+    set selec = prodDoc.Selection
+
+    cnt = 0
+    for i=1 to bodies.Count
+        if bodies.item(i).shapes.count>0 then
+            selec.clear
+            selec.add bodies.item(i)
+            vis = catVisPropertyShowAttr
+            call selec.VisProperties.GetShow(vis)
+
+            if  vis = catVisPropertyShowAttr then
+                selec.copy
+                set newPart = prodDoc.Product.Products.AddNewComponent("Part", "")
+                newPartDocName = newPart.ReferenceProduct.name & ".CATPart"
+                set newPart = CATIA.Documents.item(newPartDocName).Part
+                selec.clear
+                selec.add newPart
+                selec.PasteSpecial("CATPrtResultWithOutLink")
+                cnt = cnt + 1
+            end if
+        end if
+    next
+
+    if cnt = 0 then
+        prodDoc.close
+    else
+        prodDoc.Product.products.remove(1)
+        prodDoc.Product.update
+    end if
+
+    part2product = cnt
+end function
+
+'===================================================================== main sub
+sub CATMain()
+
+    set doc = nothing
+
+    if CATIA.Windows.Count<1 then
+        msgbox "请打开一个零件文件!", vbInformation, "ERROR"
+        exit sub
+    else
+        if right(CATIA.ActiveDocument.Name, 8) = ".CATPart" then
+            set doc = CATIA.ActiveDocument
+        else
+            msgbox "当前文档不支持此操作", vbInformation, "ERROR"
+            exit sub
+        end if
+    end if
+
+    if vbYes=msgbox("将当前零件转换为产品?", vbYesNo + vbQuestion, "请确认") then
+        cnt = part2product(doc)
+        if cnt=0 then
+            msg = "没有实体可以转换"
+        else
+            msg = "已将"&cnt&"个实体转换为零件"
+        end if
+        msgbox msg, vbInformation, "完成"
+    end if
+
+end sub
+'==================================================================== main over

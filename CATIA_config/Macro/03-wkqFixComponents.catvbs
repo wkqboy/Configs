@@ -1,0 +1,97 @@
+﻿'------------------------------------------------------------------------------
+' BOM Generator for CATIA
+' (c)WKQ
+' wkqboy@gmail.com
+' 2014.05.31
+'------------------------------------------------------------------------------
+Language="VBSCRIPT"
+
+'========================================================================== DRY
+function infoBox(text)
+    infoBox = msgbox(text, vbInformation, "信息")
+end function
+
+function yesNoBox(text)
+    yesNoBox = msgbox(text, vbYesNo + vbQuestion, "请选择")
+end function
+
+function yesNoCancelBox(text)
+    yesNoCancelBox = msgbox(text, vbYesNoCancel + vbQuestion, "请选择")
+end function
+
+function warringBox(text)
+    warringBox = msgbox(text, vbExclamation, "警告")
+end function
+
+function errorBox(text)
+    errorBox = msgbox(text, vbCritical, "错误")
+end function
+
+'========================================================================== DRY
+private sub fixChildren(rootProd, cnt)
+    set prod = CATIA.ActiveDocument.GetItem(rootProd.PartNumber)
+    set constraints = prod.Connections("CATIAConstraints")
+    set selection = CATIA.ActiveDocument.Selection
+
+    for i=1 to prod.Products.count
+        set child = prod.Products.item(i)
+        path = prod.PartNumber &"/"& child.name &"/"
+        str  = path &"!"& path
+
+        set reference = prod.CreateReferenceFromName(str)
+        set constraint = constraints.AddMonoEltCst(catCstTypeReference, reference)
+
+        selection.clear
+        selection.add constraint
+        set visPropSet = selection.visProperties.parent
+        visPropSet.setShow catVisPropertyNoShowAttr
+        selection.clear
+        cnt = cnt + 1
+
+        if child.Products.count > 0 then
+            call fixChildren (child, cnt)
+        end if
+    next
+end sub
+
+'======================================================================main sub
+sub CATMain()
+
+    if CATIA.Windows.Count<1 then
+        infoBox "请打开一个产品文档!"
+        exit sub
+    elseif right(CATIA.ActiveDocument.Name, 11) <> ".CATProduct" then
+        infoBox "当前文档不是产品文档!"
+        exit sub
+    end if
+
+    set rootProd = CATIA.ActiveDocument.Product
+    set selected = CATIA.ActiveDocument.Selection
+    if selected.Count = 1 then
+        if selected.item(1).Type = "Product" then
+            set rootProd = selected.item(1).LeafProduct
+        end if
+    end if
+
+    if rootProd.Products.Count<1 then
+        infoBox "产品为空!"
+        exit sub
+    end if
+
+    chosen = msgbox("操作对象: ("&rootProd.PartNumber&")"&vbNewLine&vbNewLine& _
+                    "[是] --> 将所有元件固定到当前位置"&vbNewLine& _
+                    "[否] --> 退出操作",_
+                    vbYesNo+vbQuestion, "请选择")
+
+    select case chosen
+        case vbYes
+            cnt = 0
+            call fixChildren(rootProd, cnt)
+            msgbox "操作完成,已固定"&cnt&"个项目", vbInformation, "完成"
+        case else
+            exit sub
+    end select
+
+end sub
+'=====================================================================main over
+

@@ -1,0 +1,34 @@
+-------------------------------------------------------------------------------
+R22无法保存问题:
+许可证全选的话，无法保存。把许可证里面去掉DIC,ED2,EX2,I3D就可以保存了！！！
+
+-------------------------------------------------------------------------------
+禁止启动时自动新建文档:
+Environment Editor 中新建变量 CATNoStartDocument=yes
+
+-------------------------------------------------------------------------------
+进入管理模式:
+1
+在进入管理模式之前，
+要新建C:\Documents and Settings\All Users\Application Data\DassaultSystemes\ReferenceSettingPath目录
+再新建C:\Documents and Settings\All Users\Application Data\DassaultSystemes\CollectionStandard目录
+
+2
+开始菜单－程序－CATIA_P3－Tools工具下Environment Editor V5RX
+编辑CATReferenceSettingPath =C:\Documents and Settings\All Users\Application Data\DassaultSystemes\ReferenceSettingPath
+编辑CATCollectionStandard =C:\Documents and Settings\All Users\Application Data\DassaultSystemes\CollectionStandard
+面路径可能与你的机器上catia的版本不同而不同，需要根据你的catia软件安装位置做些修改。
+
+3
+快捷方式属性修改: 在原属性后面加 -admin，特别注意前面有一个空格。如:
+"D:\Program Files\Dassault Systemes\B20\intel_a\code\bin\CATSTART.exe"  -run "CNEXT.exe -admin" -env CATIA -direnv "C:\Documents and Settings\Administrator\Application Data\DassaultSystemes\CATEnv" -nowindow
+
+-------------------------------------------------------------------------------
+环境编辑器
+"D:\Program Files\Dassault Systemes\B20\intel_a\code\bin\CATIAENV.exe"
+
+-------------------------------------------------------------------------------
+加工界面字体不清
+X:\Dassault Systemes\B19\intel_a\resources\fonts\Stroke
+备份 SICH.font
+复制 TRCH.font 重命名 SICH.font

@@ -1,0 +1,322 @@
+﻿'------------------------------------------------------------------------------
+' BOM Generator for CATIA
+' (c)WKQ
+' wkqboy@gmail.com
+' 2014.05.31
+'------------------------------------------------------------------------------
+Language="VBSCRIPT"
+
+'========================================================================== DRY
+class CATProdParser
+    private mCount, mOutOfBoundary, _
+            mLevelCol, mIndexCol, mPnCol, mQtyCol, mObjCol, _
+            mExtraCol, _
+            table()
+
+    '--------------------------------------------'
+    property get count
+        count = mCount
+    end property
+
+    '--------------------------------------------'
+    property get level(row)
+        ret = 0
+        if row >= 1 and row <= mCount and _
+           mLevelCol>=1 and mLevelCol<=ubound(table, 2) then
+            ret = table(row, mLevelCol)
+        end if
+        level = ret
+    end property
+
+    '--------------------------------------------'
+    property get index(row)
+        ret = 0
+        if row >= 1 and row <= mCount and _
+           mIndexCol>=1 and mIndexCol<=ubound(table, 2) then
+            ret = table(row, mIndexCol)
+        end if
+        index = ret
+    end property
+
+    '--------------------------------------------'
+    property get pn(row)
+        ret = empty
+        if row >= 1 and row <= mCount and _
+           mPnCol>=1 and mPnCol<=ubound(table, 2) then
+            ret = table(row, mPnCol)
+        end if
+        pn = ret
+    end property
+
+    '--------------------------------------------'
+    property get qty(row)
+        ret = 0
+        if row >= 1 and row <= mCount and _
+           mIndexCol>=1 and mIndexCol<=ubound(table, 2) then
+            ret = table(row, mQtyCol)
+        end if
+        qty = ret
+    end property
+
+    '--------------------------------------------'
+    property get prod(row)
+        set ret = nothing
+        if row >= 1 and row <= mCount and _
+           mObjCol>=1 and mObjCol<=ubound(table, 2) then
+            set ret = table(row, mObjCol)
+        end if
+        set prod = ret
+    end property
+
+   '--------------------------------------------'
+    property get extra(row)
+        set ret = empty
+        if row >= 1 and row <= mCount and _
+           mExtraCol>=1 and mExtraCol<=ubound(table, 2) then
+            ret = table(row, mExtraCol)
+        end if
+        extra = ret
+    end property
+
+   '--------------------------------------------'
+    property let extra(row, val)
+        if row >= 1 and row <= mCount and _
+           mExtraCol>=1 and mExtraCol<=ubound(table, 2) then
+            table(row, mExtraCol) = val
+        end if
+    end property
+
+   '--------------test if the prod is a assembly
+    private function isAssembly(prod)
+        isAssembly = false
+        if prod.Products.Count > 0 then
+            isAssembly = true
+        end if
+    end function
+
+    '--------------------------------------------'
+    private sub doParse(prod, level)
+        startRow = mCount + 1
+        currIndex = 1
+
+        for i=1 to prod.Products.count
+            set currProd = prod.Products.item(i)
+            foundRepeat = false
+            '-------------------------------------------------------find repeat
+            for r=startRow to mCount
+                if table(r, mPnCol) = currProd.PartNumber and _
+                   table(r, mLevelCol) = level then
+                    table(r, mQtyCol) = table(r, mQtyCol) + 1
+                    foundRepeat = true
+                    exit for
+                end if
+            next
+
+            '------------------------------record currProd to tab's current row
+            if not foundRepeat then
+                if mCount < ubound(table, 1) then
+                    table(mCount + 1, mLevelCol) = level
+                    table(mCount + 1, mIndexCol) = currIndex
+                    table(mCount + 1, mPnCol)    = currProd.PartNumber
+                    table(mCount + 1, mQtyCol)   = 1
+                    set table(mCount+1, mObjCol) = currProd
+
+                    currIndex = currIndex + 1
+                    mCount = mCount + 1
+
+                    if isAssembly(currProd) then
+                        call doParse(currProd, level + 1)
+                    end if
+                else
+                    mOutOfBoundary = true
+                    exit sub
+                end if
+            end if 'not found repeat
+        next
+    end sub
+
+    '--------------------------------------------'
+    sub parse(prod)
+        mCount = 0
+        mOutOfBoundary  = false
+        prod.applyWorkMode(DESIGN_MODE)
+        call doParse(prod, 1)
+        if mOutOfBoundary then
+            msgbox "Too many data!"&vbNewLine& _
+                    "(The maximum data number is: "&ubound(table,1)&")"
+        end if
+    end sub
+
+    '--------------------------------------------'
+    function searchProd(pn)
+        set searchProd = nothing
+        if pn <> "" then
+            for row=1 to mCount
+                if table(row, mPnCol) = pn then
+                    set searchProd = table(row, mObjCol)
+                    exit for
+                end if
+            next
+        end if
+    end function
+
+    '--------------------------------------------'
+    function getIndexStr(theRow)
+        str = ""
+        if (theRow >= 1) and (theRow <= mCount) then
+            row=theRow
+            finishedL = table(row, mLevelCol)+1
+            while table(row, mLevelCol) > 1
+                if table(row, mLevelCol) = finishedL-1 then
+                    str = "."&table(row, mIndexCol) & str
+                    finishedL = table(row, mLevelCol)
+                end if
+                row = row - 1
+            wend
+            str = table(row, mIndexCol) & str
+        end if
+        getIndexStr = str
+    end function
+
+    '--------------------------------------------'
+    function getURP(prod, propName)
+        getURP = empty
+
+        if propName <> "" then
+            set urps = prod.ReferenceProduct.UserRefProperties
+            for i=1 To urps.Count
+                propStr = urps.item(i).ValueAsString
+                'msgbox propStr&"|"&propName&"|"&findProp(propStr, propName)
+                valIndex   = findProp(propStr, propName)
+                if valIndex > 0 then 'property found
+                    getURP = getPropValue(propStr, propName)
+                    exit for
+                end if
+            next
+        end if
+    end function
+
+    '--------------------------------------------'
+    function setURP(prod, propName, val)
+        setURP = empty
+
+        if propName <> "" then
+            set urps = prod.ReferenceProduct.UserRefProperties
+            propFound = false
+            for i=1 To urps.Count
+                propStr = urps.item(i).ValueAsString
+                valIndex   = findProp(propStr, propName)
+                if valIndex > 0 then 'property found
+                    urps.item(i).valuateFromString (setPropValue(propStr, propName, val))
+                    propFound = true
+                    exit for
+                end if
+            next
+
+            if not propFound then
+                urps.CreateString propName, propName&valueSpliter&val
+            end if
+
+            setURP = val
+        end if
+    end function
+
+    '--------------------------------------------'
+    private sub class_initialize
+        mCount      = 0
+        mLevelCol   = 1
+        mIndexCol   = 2
+        mPnCol      = 3
+        mQtyCol     = 4
+        mObjCol     = 5
+        mExtraCol   = 6
+
+        redim table (1000, 6)
+    end sub
+
+    '--------------------------------------------'
+    private sub class_terminate
+        for i=1 to ubound(table,1)
+            set table(i, mObjCol) = nothing
+        next
+    end sub
+end class
+
+'========================================================================== DRY
+' search the value in the given row of the table
+' return column number if found or 0 if not
+function searchRow (value, table, row)
+    ret = 0
+    if row>=lbound(table, 1) and row<=ubound(table, 1) then
+        for col=lbound(table, 2) to uBound(table, 2)
+            if table(row, col) = value then
+            'if inStr(1, table(row, col), value) > 0 then
+                ret = col
+                exit for
+            end if
+        next
+    end if
+    searchRow = ret
+end function
+
+'------------------------------------------------------------------------------
+private sub clearProps(prod)
+    set urps = prod.ReferenceProduct.UserRefProperties
+    while urps.Count > 0
+        urps.remove(1)
+    wend
+end sub
+
+'======================================================================main sub
+sub CATMain()
+
+    set rootProd = nothing
+    tip = ""
+
+    if CATIA.Windows.Count<1 then
+        msgbox "请打开一个产品文件!", vbInformation, "ERROR"
+        exit sub
+    else
+        if right(CATIA.ActiveDocument.Name, 8) = ".CATPart" then
+            set rootProd = CATIA.ActiveDocument.Product
+            tip = "清除"&rootProd.PartNumber&"的所有自定义属性?"
+
+        elseif right(CATIA.ActiveDocument.Name, 11) = ".CATProduct" then
+            set rootProd = CATIA.ActiveDocument.Product
+            set selected = CATIA.ActiveDocument.Selection
+            if selected.Count = 1 then
+                if selected.item(1).Type = "Product" then
+                    set rootProd = selected.item(1).LeafProduct
+                end if
+            end if
+            tip = "清除"&rootProd.PartNumber&"及其子组件的所有自定义属性?"
+
+        else
+            msgbox "当前文档不支持此操作", vbInformation, "ERROR"
+            exit sub
+        end if
+    end if
+
+    if vbYes=msgbox(tip, vbYesNo + vbQuestion, "Confirm") then
+        set pp = new CATProdParser
+        PP.parse(rootProd)
+
+        redim tab(1, pp.count + 1)
+        clearProps(rootProd)
+        tab(1, 1) = rootProd.PartNumber
+        cleardCount = 1
+
+        for row=1 to pp.count
+            currPN = pp.pn(row)
+            if searchRow(currPN, tab, 1) < 1 then
+                clearProps(pp.prod(row))
+
+                cleardCount = cleardCount + 1
+                tab(1, cleardCount) = currPN
+            end if
+
+        next
+        msgbox "已清除"&cleardCount&"个文档的自定义参数", vbInformation, "完成"
+    end if
+end sub
+'=====================================================================main over

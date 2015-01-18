@@ -1,0 +1,23 @@
+Language="VBSCRIPT"
+
+Sub CATMain()
+    if CATIA.Windows.Count<1 then
+        exit sub
+    elseif right(CATIA.ActiveDocument.Name, 11) <> ".CATProduct" then
+        exit sub
+    end if
+
+    set rootProd = CATIA.ActiveDocument.Product
+    set selected = CATIA.ActiveDocument.Selection
+    if selected.Count = 1 then
+        if selected.item(1).Type = "Product" then
+            set rootProd = selected.item(1).LeafProduct
+        end if
+    end if
+
+    if rootProd.Products.Count<1 then
+        exit sub
+    end if
+
+    rootProd.applyWorkMode(VISUALIZATION_MODE)
+End Sub

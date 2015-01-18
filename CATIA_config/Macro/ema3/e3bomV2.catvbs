@@ -1,0 +1,199 @@
+' bom, (c)ema, lm:20.7.2009
+'
+Language="VBSCRIPT"
+Sub CATMain()
+' ******************************* test if product is open *****************************
+  If CATIA.Documents.Count = 0 Then
+    MsgBox "There is no CATIA Documents open. Open a Product file and run this script again.", ,msgboxtext
+    Exit Sub
+  End If
+  If InStr(CATIA.ActiveDocument.Name, ".CATProduct") < 1 Then
+    MsgBox "Active CATIA Document is not a Product. Open a Product file and run this script again.", ,msgboxtext
+    Exit Sub
+  End If
+' ******************************* variables *******************************************
+  Set objNetwork = CreateObject("Wscript.Network")
+  Set cad = CATIA.ActiveDocument
+  Set sel = cad.selection
+  set prod=cad.Product.Products
+  msgboxtext="e3bom - Bill of Material"
+  dim tab(5,1999)
+  k=0
+' ******************************* test if some parts is selected **********************
+  If sel.count =0 Then
+    MsgBox "No any parts for BOM is selected. Select some parts and run this script again.", ,msgboxtext
+    Exit Sub
+  End If
+  If sel.count >=1999 Then
+    MsgBox "Number of selected parts for BOM exceeds 1999. Program error.", ,msgboxtext
+    Exit Sub
+  End If
+' ******************************* load ************************************************
+  for i=1 to prod.count
+    for j=1 to sel.count
+      if prod.item(i).name=sel.item(j).reference.name then
+        k=k+1
+        tab(2,k)=prod.item(i).PartNumber
+        tab(1,k)=sel.item(j).reference.name
+        tab(3,k)=prod.item(i).DescriptionRef
+        tab(4,k)=1
+        tab(5,k)=prod.item(i).Nomenclature
+      end if
+    next
+  next
+' ******************************* sort ************************************************
+  if k>1 then
+    for i=1 to k-1 
+      for j=i+1 to k
+        if tab(1,i)>tab(1,j)then
+          tab(1,1999)=tab(1,j)
+          tab(2,1999)=tab(2,j)
+          tab(3,1999)=tab(3,j)
+          tab(4,1999)=tab(4,j)
+          tab(5,1999)=tab(5,j)
+          tab(1,j)=tab(1,i)
+          tab(2,j)=tab(2,i)
+          tab(3,j)=tab(3,i)
+          tab(4,j)=tab(4,i)
+          tab(5,j)=tab(5,i)
+          tab(1,i)=tab(1,1999)
+          tab(2,i)=tab(2,1999)
+          tab(3,i)=tab(3,1999)
+          tab(4,i)=tab(4,1999)
+          tab(5,i)=tab(5,1999)
+        end if
+      next
+    next
+' ******************************* count ***********************************************
+    for i=1 to k-1
+      for j=i+1 to k
+        if tab(1,i)=tab(1,j) and j<=k then
+          tab(1,j)=tab(1,k)
+          tab(2,j)=tab(2,k)
+          tab(3,j)=tab(3,k)
+          tab(4,j)=tab(4,k)
+          tab(4,i)=tab(4,i)+1
+          tab(5,j)=tab(5,k)
+          k=k-1
+        end if
+      next
+    next
+  end if
+' ******************************* output to excel *************************************
+'for i=1 to k
+  'msgbox i & " " & tab(1,i) & " " & tab(2,i) & " " & tab(3,i) & " " & tab(4,i)
+'next
+  Dim xlApp
+  err.Clear
+  On Error Resume Next
+'  set xlApp = GetObject(,"com.sun.star.ServiceManagerR")
+  set xlApp = GetObject(,"EXCEL.Application")
+  if Err.Number <> 0 Then
+    Err.Clear
+'    Set xlApp = CreateObject("com.sun.star.sheet")
+    Set xlApp = CreateObject("EXCEL.Application")
+  end If
+  xlApp.Visible = True  
+  xlApp.Workbooks.Add  
+  if Err.Number <> 0 Then 
+    msgbox "Can't open excel.", ,msgboxtext
+    workbook.Close
+    xlApp.Quit
+  end if
+  row=4
+  col=0
+  xlApp.Cells(row,col+3).Value = "LH UNIT-BOM"
+  xlApp.Cells(row,col+3).borders.LineStyle = 1
+  xlApp.Cells(row,col+3).borders.Weight = 3
+  xlApp.Cells(row,col+3).HorizontalAlignment = 3
+  xlApp.Cells(row,col+9).Value = "RH UNIT-BOM"
+  xlApp.Cells(row,col+9).borders.LineStyle = 1
+  xlApp.Cells(row,col+9).borders.Weight = 3
+  xlApp.Cells(row,col+9).HorizontalAlignment = 3
+  row=7
+  xlApp.Cells(row, col+1).Value = "UNIT CODE"
+  xlApp.Cells(row+1, col+1).Value = "UNIT DESCRIPTION"
+  xlApp.Cells(row+2, col+1).Value = "PARENT CODE"
+  xlApp.Cells(row+3, col+1).Value = "PARENT DESCRIPTION"
+  xlApp.Cells(row, col+3).Value = cad.Product.PartNumber
+  xlApp.Cells(row+1, col+3).Value = cad.Product.DescriptionRef
+  xlApp.Cells(row, col+7).Value = "UNIT CODE"
+  xlApp.Cells(row+1, col+7).Value = "UNIT DESCRIPTION"
+  xlApp.Cells(row+2, col+7).Value = "PARENT CODE"
+  xlApp.Cells(row+3, col+7).Value = "PARENT DESCRIPTION"
+  xlApp.Cells(row, col+9).Value = cad.Product.PartNumber
+  xlApp.Cells(row+1, col+9).Value = cad.Product.DescriptionRef
+  for i=1 to 4
+    xlApp.Range("A" & row-1+i & ":B" & row-1+i).MergeCells = True
+    xlApp.Range("A" & row-1+i & ":B" & row-1+i).borders.LineStyle = 1
+    xlApp.Range("A" & row-1+i & ":B" & row-1+i).Font.Bold = true
+    xlApp.Range("G" & row-1+i & ":H" & row-1+i).MergeCells = True
+    xlApp.Range("G" & row-1+i & ":H" & row-1+i).borders.LineStyle = 1
+    xlApp.Range("G" & row-1+i & ":H" & row-1+i).Font.Bold = true
+    xlApp.Range("C" & row-1+i & ":E" & row-1+i).MergeCells = True
+    xlApp.Range("C" & row-1+i & ":E" & row-1+i).borders.LineStyle = 1
+    xlApp.Range("C" & row-1+i & ":E" & row-1+i).HorizontalAlignment = 3
+    xlApp.Range("I" & row-1+i & ":K" & row-1+i).MergeCells = True
+    xlApp.Range("I" & row-1+i & ":K" & row-1+i).borders.LineStyle = 1
+    xlApp.Range("I" & row-1+i & ":K" & row-1+i).HorizontalAlignment = 3
+  next
+  row=12
+  xlApp.Cells(row, col+1).Value = "SR.NO."  
+  xlApp.Cells(row, col+2).Value = "PART NO."
+  xlApp.Cells(row, col+3).Value = "DESCRIPTION"
+  xlApp.Cells(row, col+4).Value = "QTY."
+  xlApp.Cells(row, col+5).Value = "REMARK"
+  xlApp.Cells(row, col+7).Value = "SR.NO." 
+  xlApp.Cells(row, col+8).Value = "PART NO."
+  xlApp.Cells(row, col+9).Value = "DESCRIPTION"
+  xlApp.Cells(row, col+10).Value ="QTY."
+  xlApp.Cells(row, col+11).Value ="REMARK"
+
+  xlApp.Columns.Columns(1).Columnwidth = 8
+  xlApp.Columns.Columns(2).Columnwidth = 15
+  xlApp.Columns.Columns(3).Columnwidth = 15
+  xlApp.Columns.Columns(4).Columnwidth = 6
+
+  xlApp.Columns.Columns(7).Columnwidth = 8
+  xlApp.Columns.Columns(8).Columnwidth = 15
+  xlApp.Columns.Columns(9).Columnwidth = 15
+  xlApp.Columns.Columns(10).Columnwidth = 6
+  for i=1 to 11
+'    xlApp.Cells(row,col+i).Interior.ColorIndex = 40
+    if(i<>6)then
+      xlApp.Cells(row,col+i).Font.Bold = true
+      xlApp.Cells(row,col+i).HorizontalAlignment = 3
+      xlApp.Cells(row,col+i).borders.LineStyle = 1
+      xlApp.Cells(row,col+i).borders.weight = -4138
+    end if
+  next
+' row=row+1
+  for i=1 to k
+    xlApp.Cells(row+i,col+1).Value = tab(1,i) 
+    xlApp.Cells(row+i,col+2).Value = tab(2,i)
+    xlApp.Cells(row+i,col+3).Value = trim(tab(3,i))
+    xlApp.Cells(row+i,col+4).Value = tab(4,i)
+    xlApp.Cells(row+i,col+7).Value = tab(1,i) 
+    xlApp.Cells(row+i,col+8).Value = tab(5,i)
+    xlApp.Cells(row+i,col+9).Value = trim(tab(3,i))
+    xlApp.Cells(row+i,col+10).Value = tab(4,i)
+    for j=1 to 11
+'     xlApp.Cells(row+i,col+j).Interior.ColorIndex = 19
+      xlApp.Cells(row+i,col+j).Font.Bold = false
+      if(j<>6)then xlApp.Cells(row+i,col+j).borders.LineStyle = 1
+      xlApp.Cells(row+i,col+j).HorizontalAlignment = 3
+    next
+  next
+  xlApp.Cells(1,1).Select 
+.MergeCells = True
+'With xlApp.Selection
+'.HorizontalAlignment = xlCenter
+'.MergeCells = True
+'End With
+'xlApp.Cells(1, 1).HorizontalAlignment = 2
+'xlApp.Activate
+'xlApp.Unprotect
+'xlApp.Range(4, 3).HorizontalAlignment = xlCenter
+'xlApp.Selection.HorizontalAlignment = xlCenter
+'xlApp.ActiveWorkbook.ActiveSheet.Range("A1:D4").HorizontalAlignment = xlCenter
+End Sub
