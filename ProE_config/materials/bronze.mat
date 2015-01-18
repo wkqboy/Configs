@@ -1,0 +1,27 @@
+          MATERIAL  BRONZE_MMNS                     
+ 
+This file may be edited using available editor.
+Just type on the necessary lines appropriate values 
+after the "=" sign. Comments are not permitted on 
+lines containing material properties names.
+
+YOUNG_MODULUS                    =      1.034149E+08
+POISSON_RATIO                    =      3.400000E-01
+SHEAR_MODULUS                    = 
+MASS_DENSITY                     =      8.852055E-06
+THERMAL_EXPANSION_COEFFICIENT    =      1.781999E-05
+THERM_EXPANSION_REF_TEMPERATURE  = 
+STRUCTURAL_DAMPING_COEFFICIENT   = 
+STRESS_LIMIT_FOR_TENSION         = 
+STRESS_LIMIT_FOR_COMPRESSION     = 
+STRESS_LIMIT_FOR_SHEAR           = 
+THERMAL_CONDUCTIVITY             =      6.922893E+04
+EMISSIVITY                       = 
+SPECIFIC_HEAT                    = 
+HARDNESS                         = 
+CONDITION                        = 
+INITIAL_BEND_Y_FACTOR            =      5.000000E-01
+BEND_TABLE                       = 
+PRO_UNIT_MASS                    = 
+PRO_UNIT_LENGTH                  = 
+PRO_UNIT_SYS                     =      Millimet Kilogram Second(mmKgS)

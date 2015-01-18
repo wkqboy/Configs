@@ -1,0 +1,9 @@
+MATERIAL  cu_mmns
+! description;   beryllium copper            
+! units; millimeter-newton-sec
+! reference;   Roark & Young, 5th Ed  
+YOUNG_MODULUS                    =     1.309929E+05
+POISSON_RATIO                    =     3.500000E-01
+MASS_DENSITY                     =     8.215814E-09
+THERMAL_EXPANSION_COEFFICIENT    =     1.673999E-05
+THERMAL_CONDUCTIVITY             =     1.211513E+02

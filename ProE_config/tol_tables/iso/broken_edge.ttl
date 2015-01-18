@@ -1,0 +1,22 @@
+!# Pro/TABLE
+!# Pro/TABLE  TM  Version E-01-41  (c) 1988-93 by Parametric Technology Corporation  All Rights Reserved.
+! [] S 92;
+! [] W 10;
+! [A] W 11;
+"! Any cell preceeded by ! will be ignored" 
+"! Any cell preceeded by # will be treated as a comment" 
+"! All comments must be at the beginning of the file before table header" 
+
+"ISO Tolerance table" 
+
+"Table_Type" "Broken_Edges" 
+"Table_Name" "Defaults" 
+"Table_Unit" "millimeter" 
+"Range_Unit" "millimeter" 		
+
+"Description" "\"0.5 - 3.0" "\"3 - 6" "\"6 - 30" "\"30-4000" 
+
+"Fine" 0.2 0.5 1 1
+"Medium" 0.2 0.5 1 1
+"Coarse" 0.4 1 2 4
+"Very Coarse" 0.4 1 2 4

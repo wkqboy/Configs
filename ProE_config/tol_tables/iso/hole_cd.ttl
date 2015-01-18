@@ -1,0 +1,22 @@
+!# Pro/TABLE
+!# Pro/TABLE  TM  Version E-03-03  (c) 1988-93 by Parametric Technology Corporation  All Rights Reserved.
+! [] S 92;
+! [] W 10;
+! [A] W 11;
+! [B] W  7;
+"! Any cell preceeded by ! will be ignored" 
+"! Any cell preceeded by # will be treated as a comment" 
+"! All comments must be at the beginning of the file before table header" 
+
+"ISO Tolerance table" 
+
+"Table_Type" "Holes" 
+"Table_Name" "CD" 
+"Table_Unit" "micrometer" 
+"Range_Unit" "millimeter" 
+
+"Basic Size" 6 7 8 9 10 
+
+"- -  3" "\"40/34" "\"44/34" "\"48/34" "\"59/34" "\"74/34" 
+"3 -  6" "\"54/46" "\"58/46" "\"64/46" "\"76/46" "\"94/46" 
+"6 - 10" "\"65/56" "\"71/56" "\"78/56" "\"92/56" "\"114/56" 

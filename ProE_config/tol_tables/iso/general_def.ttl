@@ -1,0 +1,23 @@
+!# Pro/TABLE
+!# Pro/TABLE  TM  Version E-03-08  (c) 1988-93 by Parametric Technology Corporation  All Rights Reserved.
+! [] S 92;
+! [] W 10;
+! [A] W 11;
+! [G] W 11;
+"! Any cell preceeded by ! will be ignored" 
+"! Any cell preceeded by # will be treated as a comment" 
+"! All comments must be at the beginning of the file before table header" 
+
+"ISO Tolerance table" 
+
+"Table_Type" "General_Dims" 
+"Table_Name" "Defaults" 
+"Table_Unit" "millimeter" 
+"Range_Unit" "millimeter" 					
+
+"Description" "\"0.5 - 3.0" "\"3 - 6" "\"6 - 30" "\"30 - 120" "\"120 - 400" "\"400 - 1000" "\"1000 - 2000" "\"2000 - 4000" 
+
+"Fine" 0.05 0.05 0.1 0.15 0.2 0.3 0.5 "\"-" 
+"Medium" 0.1 0.1 0.2 0.3 0.5 0.8 1.2 2 
+"Coarse" 0.2 0.3 0.5 0.8 1.2 2 3 4 
+"Very Coarse" "\"-" 0.5 1 1.5 2.5 4 6 8 

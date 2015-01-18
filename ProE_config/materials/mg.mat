@@ -1,0 +1,27 @@
+          MATERIAL  MG_MMNS                         
+ 
+This file may be edited using available editor.
+Just type on the necessary lines appropriate values 
+after the "=" sign. Comments are not permitted on 
+lines containing material properties names.
+
+YOUNG_MODULUS                    =      4.481313E+07
+POISSON_RATIO                    =      3.500000E-01
+SHEAR_MODULUS                    = 
+MASS_DENSITY                     =      1.798074E-06
+THERMAL_EXPANSION_COEFFICIENT    =      2.879998E-05
+THERM_EXPANSION_REF_TEMPERATURE  = 
+STRUCTURAL_DAMPING_COEFFICIENT   = 
+STRESS_LIMIT_FOR_TENSION         = 
+STRESS_LIMIT_FOR_COMPRESSION     = 
+STRESS_LIMIT_FOR_SHEAR           = 
+THERMAL_CONDUCTIVITY             =      5.019097E+04
+EMISSIVITY                       = 
+SPECIFIC_HEAT                    = 
+HARDNESS                         = 
+CONDITION                        = 
+INITIAL_BEND_Y_FACTOR            =      5.000000E-01
+BEND_TABLE                       = 
+PRO_UNIT_MASS                    = 
+PRO_UNIT_LENGTH                  = 
+PRO_UNIT_SYS                     =      Millimet Kilogram Second(mmKgS)

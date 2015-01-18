@@ -1,0 +1,27 @@
+          MATERIAL  FE20_MMNS                       
+ 
+This file may be edited using available editor.
+Just type on the necessary lines appropriate values 
+after the "=" sign. Comments are not permitted on 
+lines containing material properties names.
+
+YOUNG_MODULUS                    =      9.652059E+07
+POISSON_RATIO                    =      2.500000E-01
+SHEAR_MODULUS                    = 
+MASS_DENSITY                     =      6.943330E-06
+THERMAL_EXPANSION_COEFFICIENT    =      1.079999E-05
+THERM_EXPANSION_REF_TEMPERATURE  = 
+STRUCTURAL_DAMPING_COEFFICIENT   = 
+STRESS_LIMIT_FOR_TENSION         = 
+STRESS_LIMIT_FOR_COMPRESSION     = 
+STRESS_LIMIT_FOR_SHEAR           = 
+THERMAL_CONDUCTIVITY             =      5.199972E+04
+EMISSIVITY                       = 
+SPECIFIC_HEAT                    = 
+HARDNESS                         = 
+CONDITION                        = 
+INITIAL_BEND_Y_FACTOR            =      5.000000E-01
+BEND_TABLE                       = 
+PRO_UNIT_MASS                    = 
+PRO_UNIT_LENGTH                  = 
+PRO_UNIT_SYS                     =      Millimet Kilogram Second(mmKgS)
