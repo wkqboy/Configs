@@ -1,0 +1,171 @@
+!==========================================================
+! File: draw.dtl
+! Copyright: Wang Keqin wkqboy@qq.com
+!==========================================================
+
+drawing_units                   MM
+projection_type                 THIRD_ANGLE
+draft_scale                     1.000000
+
+line_style_standard             STD_ISO
+node_radius                     DEFAULT
+draw_layer_overrides_model      NO
+ignore_model_layer_status       NO
+
+!----------------------------------------------------- text
+default_font                    font
+drawing_text_height             3.000000
+text_thickness                  0.000000
+text_width_factor               0.700000
+
+!----------------------------------------- leader and arrow
+draw_arrow_style                FILLED
+draw_arrow_length               3.000000
+draw_arrow_width                1.000000
+leader_elbow_length             3.000000
+leader_extension_font           SOLIDFONT
+draw_attach_sym_height          DEFAULT
+draw_attach_sym_width           DEFAULT
+draw_dot_diameter               DEFAULT
+
+!----------------------------------------------------- view
+model_display_for_new_views     NO_HIDDEN
+view_note                       STD_DIN
+view_scale_format               RATIO_COLON
+view_scale_denominator          20
+def_view_text_height            3.000000
+def_view_text_thickness         0.000000
+
+detail_view_boundary_type       CIRCLE
+detail_view_scale_factor        2.000000
+detail_circle_line_style        CTRLFONT
+detail_circle_note_text         DEFAULT
+detail_view_circle              ON
+
+broken_view_offset              2.000000
+half_view_line                  SYMMETRY
+show_total_unfold_seam          NO
+
+create_area_unfold_segmented    YES
+
+crossec_arrow_length            2.500000
+crossec_arrow_style             TAIL_ONLINE
+crossec_arrow_width             1.000000
+crossec_text_place              BEFORE_TAIL
+crossec_type                    OLD_STYLE
+
+cutting_line                    STD_ISO
+cutting_line_adapt              YES
+cutting_line_segment            5.000000
+
+!------------------------------------------------ dimension
+lead_trail_zeros                std_metric
+lead_trail_zeros_scope          DIMS
+tol_display                     YES
+display_tol_by_1000             NO
+blank_zero_tolerance            NO
+dim_tol_lead_trail_zeros        std_metric
+tol_text_height_factor          0.700000
+tol_text_width_factor           0.700000
+
+angdim_text_orientation         parallel_outside
+
+!--------------------------------------------------- symbol
+sym_flip_rotated_text           NO
+sym_rotate_note_center          YES
+weld_symbol_standard            STD_ISO
+
+!-------------------------------------------- repeat region
+sort_method_in_region           DELIMITED
+zero_quantity_cell_format       EMPTY
+model_digits_in_region          NO
+
+!---------------------------------------------- not handled
+tan_edge_display_for_new_views  NO_DISP_TAN
+
+def_xhatch_break_around_text    YES
+def_xhatch_break_margin_size    0.150000
+draw_cosms_in_area_xsec         NO
+remove_cosms_from_xsecs         ALL
+show_quilts_in_total_xsecs      NO
+datum_point_shape               CROSS
+datum_point_size                3.000000
+hidden_tangent_edges            ERASED
+hlr_for_pipe_solid_cl           NO
+hlr_for_threads                 YES
+location_radius                 DEFAULT(2.)
+mesh_surface_lines              ON
+ref_des_display                 NO
+show_sym_of_suppressed_weld     NO
+thread_standard                 STD_ISO_IMP
+weld_light_xsec                 NO
+weld_solid_xsec                 NO
+allow_3d_dimensions             NO
+associative_dimensioning        YES
+chamfer_45deg_leader_style      STD_DIN
+clip_diam_dimensions            YES
+clip_dimensions                 YES
+clip_dim_arrow_style            DOUBLE_ARROW
+default_dim_elbows              YES
+dim_fraction_format             STD
+dim_leader_length               4.000000
+dim_text_gap                    1.000000
+draw_ang_units                  ANG_DEG
+draw_ang_unit_trail_zeros       YES
+dual_digits_diff                -1
+dual_dimensioning               NO
+dual_dimension_brackets         YES
+dual_metric_dim_show_fractions  NO
+dual_secondary_units            MM
+iso_ordinate_delta              YES
+orddim_text_orientation         PARALLEL
+ord_dim_standard                STD_ISO
+parallel_dim_placement          ABOVE
+radial_dimension_display        STD_ISO
+shrinkage_value_display         PERCENT_SHRINK
+symmetric_tol_display_standard  STD_ASME
+text_orientation                PARALLEL_DIAM_HORIZ
+use_major_units                 DEFAULT
+witness_line_delta              2.000000
+witness_line_offset             0.500000
+dim_dot_box_style               HOLLOW
+axis_interior_clipping          NO
+axis_line_offset                2.000000
+circle_axis_offset              2.000000
+radial_pattern_axis_circle      YES
+asme_dtm_on_dia_dim_gtol        ON_DIM
+gtol_datums                     STD_ISO
+gtol_dim_placement              ON_BOTTOM
+new_iso_set_datums              NO
+2d_region_columns_fit_text      NO
+all_holes_in_hole_table         YES
+dash_supp_dims_in_region        YES
+def_bom_balloons_attachment     SURFACE
+def_bom_balloons_snap_lines     YES
+def_bom_balloons_stagger        NO
+def_bom_balloons_stagger_value  0.600000
+def_bom_balloons_view_offset    10
+def_bom_balloons_edge_att_sym   FILLED_DOT
+def_bom_balloons_surf_att_sym   FILLED_DOT
+min_dist_between_bom_balloons   0.800000
+reference_bom_balloon_text      "DEFAULT"
+show_cbl_term_in_region         YES
+
+model_grid_balloon_display      YES
+model_grid_balloon_size         0.000000
+model_grid_neg_prefix           -
+model_grid_num_dig_display      0
+model_grid_offset               DEFAULT
+model_grid_text_orientation     HORIZONTAL
+model_grid_text_position        CENTERED
+
+pipe_pt_line_style              DEFAULT
+pipe_pt_shape                   CROSS
+pipe_pt_size                    DEFAULT
+show_pipe_theor_cl_pts          BEND_CL
+decimal_marker                  COMMA_FOR_METRIC_DUAL
+default_pipe_bend_note          NO
+harn_tang_line_display          NO
+
+pos_loc_format                  %s%x%y, %r
+yes_no_parameter_display        TRUE_FALSE

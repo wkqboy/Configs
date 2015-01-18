@@ -1,0 +1,288 @@
+#UGC:2 TBAR_CONF 1379 660 10 1 1 15 2700 2010160 00000000 \
+#- VERS 0 0                                                          \
+#- HOST                                                              \
+#- LINK                                                              \
+#- DBID                                                              \
+#- REVS 0,                                                           \
+#- RELL 0,                                                           \
+#- UOBJ_ID 0 0 0                                                     \
+#- MACH                                                              \
+#-END_OF_UGC_HEADER
+#Pro/ENGINEER  TM  Wildfire 3.0  (c) 1988-2002 by Wisdom Systems  All Rights Reserved. M250
+@Toolbar_io 1 0
+0 1 ->
+@defs 2 0
+1 2 [20]
+2 2 
+@type 3 1
+3 3 0
+@name 4 3
+3 4 file
+@blanked 5 1
+3 5 1
+@position 6 1
+3 6 0
+@override_blanked 7 1
+3 7 1
+@override_position 8 1
+3 8 0
+@override_customization 9 1
+3 9 0
+2 2 
+3 3 0
+3 4 edit_tool
+3 5 1
+3 6 0
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 view
+3 5 1
+3 6 0
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 mdisp
+3 5 1
+3 6 0
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 ddisp
+3 5 1
+3 6 0
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 sket_right
+3 5 0
+3 6 0
+3 7 0
+3 8 1
+3 9 0
+2 2 
+3 3 0
+3 4 freeform
+3 5 1
+3 6 0
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 ff_right
+3 5 1
+3 6 0
+3 7 1
+3 8 1
+3 9 0
+2 2 
+3 3 0
+3 4 ff_analysis
+3 5 1
+3 6 0
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 dwg_s
+3 5 1
+3 6 3
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 dwg_sr
+3 5 0
+3 6 0
+3 7 1
+3 8 1
+3 9 0
+2 2 
+3 3 0
+3 4 smt_right
+3 5 0
+3 6 0
+3 7 0
+3 8 1
+3 9 0
+2 2 
+3 3 0
+3 4 help
+3 5 1
+3 6 0
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 navigation_browser_tb
+3 5 0
+3 6 10
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 address_browser_tb
+3 5 0
+3 6 10
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 datum
+3 5 1
+3 6 3
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 annotft
+3 5 1
+3 6 3
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 d_feat_tools
+3 5 1
+3 6 3
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 a_feat_tools
+3 5 1
+3 6 3
+3 7 1
+3 8 0
+3 9 0
+2 2 
+3 3 0
+3 4 b_feat_tools
+3 5 1
+3 6 3
+3 7 1
+3 8 0
+3 9 0
+@msg_win_on_top 10 1
+1 10 0
+@sec_win_size 11 1
+1 11 1
+@tree_placement 12 1
+1 12 6
+@same_height_check 13 1
+1 13 1
+@tree_width 14 2
+1 14 BFF
+@tree_height 15 2
+1 15 BFF
+@flags 16 9
+1 16 0
+@toolbars_op_top 17 0
+1 17 [6]
+2 17 
+@type 18 1
+3 18 1
+@seed_pos 19 1
+3 19 0
+@toolbar_name 20 3
+3 20 dwg_sr
+@before 21 1
+3 21 0
+@ref_toolbar_name 22 3
+3 22 NULL
+2 17 
+3 18 0
+3 19 0
+3 20 dwg_sr
+3 21 0
+3 22 NULL
+2 17 
+3 18 1
+3 19 0
+3 20 dwg_sr
+3 21 0
+3 22 dwg_ss
+2 17 
+3 18 1
+3 19 0
+3 20 smt_right
+3 21 1
+3 22 NULL
+2 17 
+3 18 1
+3 19 0
+3 20 ff_right
+3 21 1
+3 22 NULL
+2 17 
+3 18 1
+3 19 0
+3 20 sket_right
+3 21 0
+3 22 sket_analysis
+@toolbars_op_right 23 0
+1 23 [4]
+2 23 
+3 18 0
+3 19 3
+3 20 dwg_sr
+3 21 0
+3 22 NULL
+2 23 
+3 18 0
+3 19 3
+3 20 smt_right
+3 21 0
+3 22 NULL
+2 23 
+3 18 0
+3 19 3
+3 20 ff_right
+3 21 0
+3 22 NULL
+2 23 
+3 18 0
+3 19 3
+3 20 sket_right
+3 21 0
+3 22 NULL
+@webUI_data 24 0
+1 24 ->
+@show_navigation_tb 25 1
+2 25 1
+@show_address_tb 26 1
+2 26 1
+@animate_open_close 27 1
+2 27 0
+@show_history 28 1
+2 28 0
+@show_search 29 1
+2 29 0
+@auto_loading 30 1
+2 30 0
+@steps 31 1
+2 31 5
+@width_browser 32 2
+2 32 4049
+@width_tabs 33 2
+2 33 4014
+@tabs_placement 34 1
+2 34 0
+#END_OF_UGC

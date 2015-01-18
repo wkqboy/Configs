@@ -1,0 +1,103 @@
+!====================================================================
+! FileName = config.sup
+! ProeConfigPath = E:\WKQ\Dropbox\Job\Configs\ProE_config
+!====================================================================
+
+bell                        NO
+web_browser_homepage        about:blank
+visible_message_lines       1
+menu_translation            YES
+menu_show_instances         NO
+dm_remember_server          NO
+prompt_on_exit              NO
+prompt_on_erase_not_disp    NO
+todays_date_note_format     %yyyy.%mm.%dd
+ang_units                   ANG_MIN
+mass_property_calculate     AUTOMATIC
+allow_anatomic_features     YES
+!pro_editor_command          NOTEPAD
+!part_table_editor           EXCEL
+!relation_file_editor        EDITOR
+!file_open_default_folder    WORKING_DIRECTORY
+!all_tmp_rmv_srf_feat        YES
+
+!-------------------------------------------------------------display
+!graphics                    OPENGL
+edge_display_quality        HIGH
+system_edge_high_color      255,255,255
+
+spin_with_part_entities     YES
+spin_center_display         NO
+text_height_factor          40
+save_display                YES
+save_model_display          SHADING_LOD
+save_drawing_picture_file   EMBED
+
+!----------------------------------------------accuracy and tolerance
+default_dec_places          3
+sketcher_dec_places         3
+enable_absolute_accuracy    YES
+default_abs_accuracy        0.001
+
+tol_display                 YES
+tol_mode                    NOMINAL
+tolerance_class             MEDIUM
+tolerance_standard          ISO
+angular_tol                 2 0.01
+linear_tol                  3 0.001
+tolerance_table_dir         E:\WKQ\Dropbox\Job\Configs\ProE_config\tol_tables\iso
+
+!-------------------------------------------------------------drawing
+default_draw_scale          1
+allow_move_view_with_move   YES
+create_drawing_dims_only    YES
+parenthesize_ref_dim        YES
+sym_leader_orient_move_text YES
+
+format_setup_file           E:\WKQ\Dropbox\Job\Configs\ProE_config\configs\format.dtl
+drawing_setup_file          E:\WKQ\Dropbox\Job\Configs\ProE_config\configs\drawing.dtl
+pro_format_dir              E:\WKQ\Dropbox\Job\Configs\ProE_config\formats
+pro_dtl_setup_dir           E:\WKQ\Dropbox\Job\Configs\ProE_config\configs
+pro_note_dir                E:\WKQ\Dropbox\Job\Configs\ProE_config\notes
+pro_symbol_dir              E:\WKQ\Dropbox\Job\Configs\ProE_config\symbols
+pro_font_dir                C:\WINDOWS\Fonts
+
+!----------------------------------------------------------------plot
+system_colors_file          E:\WKQ\Dropbox\Job\Configs\ProE_config\configs\syscol.scl
+search_path_file            E:\WKQ\Dropbox\Job\Configs\ProE_config\configs\search_path.pro
+
+pro_group_dir               E:\WKQ\Dropbox\Job\Configs\ProE_config\groups
+pro_library_dir             E:\WKQ\Dropbox\Job\Configs\ProE_config\library
+pro_material_dir            E:\WKQ\Dropbox\Job\Configs\ProE_config\materials
+pro_surface_finish_dir      E:\WKQ\Dropbox\Job\Configs\ProE_config\symbols\Roughness
+pro_texture_library         E:\WKQ\Dropbox\Job\Configs\ProE_config\library\graphiclib
+
+!-----------------------------------------------------------templates
+template_designasm          E:\WKQ\Dropbox\Job\Configs\ProE_config\templates\wkq_asm_design.asm
+template_sheetmetalpart     E:\WKQ\Dropbox\Job\Configs\ProE_config\templates\wkq_part_sheetmetal.prt
+template_solidpart          E:\WKQ\Dropbox\Job\Configs\ProE_config\templates\wkq_part_solid.prt
+
+!----------------------------------------------------------------plot
+plotter                     DESIGNJET600
+use_8_plotter_pens          YES
+pen1_line_weight            4
+pen2_line_weight            2
+pen4_line_weight            1
+pro_plot_config_dir         E:\WKQ\Dropbox\Job\Configs\ProE_config\plotters
+pen_table_file              E:\WKQ\Dropbox\Job\Configs\ProE_config\plotters\wkq.pnt
+plot_to_scale_full_window   YES
+
+!-------------------------------------------------------import export
+step_export_format          AP214_IS
+intf_out_blanked_entities   NO
+intf_in_use_template_models YES
+!dxf_export_mapping_file     E:\WKQ\Dropbox\Job\Configs\ProE_config\configs\dxf_export.pro
+
+!---------------------------------------------------------------trail
+set_trail_single_step       YES
+trail_delay                 1
+trail_dir                   D:\Temp
+train_file_path             D:\Temp
+
+!--------------------------------------------------------------------
+! Author=WKQ
