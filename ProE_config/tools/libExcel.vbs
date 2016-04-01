@@ -12,17 +12,8 @@ class ExcelApp
 
     '-------------------------------------------'
     private sub class_initialize
-        on error resume next
-        set mApp = getObject(, "EXCEL.application")
-        if mApp is nothing then 'fix bug'
-            set mApp = nothing
-        else
-            if mApp.workBooks.count < 1 then
-                mApp.workBooks.add
-            end if
-        end if
-
         set mRange = nothing
+        set mApp = nothing
     end sub
 
     '-------------------------------------------'
@@ -30,6 +21,49 @@ class ExcelApp
         set mRange = nothing
         set mApp = nothing
     end sub
+
+    '-------------------------------------------'
+    function connect()
+        on error resume next
+        connect    = false
+        set mApp   = nothing
+        set mRange = nothing
+
+        set mApp = getObject(, "EXCEL.application")
+        if not mApp is nothing then
+            if mApp.workBooks.count > 0 then
+                connect = true
+            end if
+        end if
+    end function
+
+    '-------------------------------------------'
+    function disConnect()
+        set mApp   = nothing
+        set mRange = nothing
+
+        disConnect = true
+    end function
+
+    '-------------------------------------------'
+    function create()
+        on error resume next
+        create = true
+
+        set mApp = getObject(, "EXCEL.application")
+        if not mApp is nothing then
+            mApp.workBooks.add
+            set mRange = nothing
+        else
+            set mApp = createObject("EXCEL.application")
+            if not mApp is nothing then
+                mApp.workBooks.add
+                mApp.visible = true
+            else
+                create = false
+            end if
+        end if
+    end function
 
     '-------------------------------------------'
     property get app
@@ -40,17 +74,6 @@ class ExcelApp
     property get oRange
         set oRange = mRange
     end property
-
-    '-------------------------------------------'
-    sub create()
-        on error resume next
-        set mApp = createObject("EXCEL.application")
-        if not mApp is nothing then
-            mApp.workBooks.add
-        else
-            set mApp = nothing 'fix bug'
-        end if
-    end sub
 
     '-------------------------------------------'
     property get range(x, y, w, h)
@@ -145,42 +168,66 @@ class ExcelApp
     '-------------------------------------------'
     property let bgColor(color)
         if not mRange is nothing then
-            mRange.Interior.ColorIndex = color mod 57
+            mRange.interior.colorIndex = color mod 57
         end if
     end property
 
     '-------------------------------------------'
     property let fontColor(color)
-
+        if not mRange is nothing then
+            mRange.font.colorIndex = color
+        end if
     end property
 
     '-------------------------------------------'
     property let fontSize(size)
-
+        if not mRange is nothing then
+            mRange.font.size = size
+        end if
     end property
 
     '-------------------------------------------'
-    property let fontFamily(name)
-
+    property let fontName(name)
+        if not mRange is nothing then
+            mRange.font.name = name
+        end if
     end property
 
     '-------------------------------------------'
     property let fontBold(bold)
-
+        if not mRange is nothing then
+            mRange.font.bold = bold
+        end if
     end property
     '-------------------------------------------'
     property let alignment(align)
-
+        if not mRange is nothing then
+            mRange.horizontalAlignment = align
+        end if
     end property
 
     '-------------------------------------------'
-    property let borderStyle(style)
+    property let bordersStyle(style)
+        if not mRange is nothing then
+            mRange.borders.lineStyle = style
+        end if
+    end property
 
+    '-------------------------------------------'
+    property let borderStyle(which, style) 'left:1, right:2, top:3, bottom:4'
+        if not mRange is nothing then
+            mRange.borders(which).lineStyle = style
+        end if
     end property
 
     '-------------------------------------------'
     property let borderWeight(weight)
-
+        if not mRange is nothing then
+            if weight < 1 then
+                weight = 2
+            end if
+            mRange.borders.weight = weight
+        end if
     end property
 
     '-------------------------------------------'
@@ -215,17 +262,20 @@ end class
 '==============================================================================
 sub main()
     set excel = new ExcelApp
-    if excel.app is nothing then
+    if not excel.connect then
         msgBox "create new Excel", vbInformation, "Title"
         excel.create()
-        excel.app.visible = true
+        excel.cell(1,1).value = "create"
     else
         msgBox "opend Excel", vbInformation, "title"
+        excel.cell(1,1).value = "opend"
     end if
 
-    'excel.range(2,2,3,3).bgColor = 4
-    'excel.value = 4
-    msgbox excel.usedRange.sizeX & "-" & excel.sizeY
+    excel.range(2,2,3,3).bgColor = 4
+    excel.range(2,2,3,1).borderWeight = 0
+    excel.value = 4
+    excel.usedRange
+    msgbox excel.startX & "-" & excel.startY & "-" & excel.sizeX & "-" & excel.sizeY
 end sub
 
 '------------------------------------------------------------------------------
