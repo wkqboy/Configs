@@ -1,103 +1,138 @@
 !====================================================================
 ! FileName = config.sup
-! ProeConfigPath = E:\WKQ\Dropbox\Job\Configs\ProE_config
+! ProeConfigPath = E:\WKQ\Configs\ProE_config
 !====================================================================
 
-bell                        NO
-web_browser_homepage        about:blank
+bell                        no
+!web_browser_homepage        http://plm.hikvision.com/Windchill
+web_browser_homepage        E:\WKQ\Configs\ProE_config\tools\webLink\WTools.html
+windows_browser_type        ie_in_sep_process
+!windows_browser_type        mozilla_based_browser
 visible_message_lines       1
-menu_translation            YES
-menu_show_instances         NO
-dm_remember_server          NO
-prompt_on_exit              NO
-prompt_on_erase_not_disp    NO
+menu_translation            both
+menu_show_instances         no
+dm_remember_server          no
+prompt_on_exit              no
+prompt_on_erase_not_disp    no
 todays_date_note_format     %yyyy.%mm.%dd
-ang_units                   ANG_MIN
-mass_property_calculate     AUTOMATIC
-allow_anatomic_features     YES
-!pro_editor_command          NOTEPAD
-!part_table_editor           EXCEL
-!relation_file_editor        EDITOR
-!file_open_default_folder    WORKING_DIRECTORY
-!all_tmp_rmv_srf_feat        YES
+ang_units                   ang_min
+mass_property_calculate     automatic
+allow_anatomic_features     yes
+mdl_tree_cfg_file           E:\WKQ\Configs\ProE_config\configs\tree.cfg
+let_proe_rename_pdm_objects yes
+creo_less_restrictive_names yes
+!pro_editor_command          notepad
+!part_table_editor           excel
+!relation_file_editor        editor
+!file_open_default_folder    working_directory
+!all_tmp_rmv_srf_feat        yes
 
-!-------------------------------------------------------------display
-!graphics                    OPENGL
-edge_display_quality        HIGH
+!---------------------------------------------------------------- dev
+web_enable_javascript       on
+web_link_file_read          yes
+web_link_file_write         yes
+web_link_proe_read          yes
+web_link_proe_write         yes
+
+!------------------------------------------------------------ display
+!graphics                    opengl
+edge_display_quality        high
 system_edge_high_color      255,255,255
 
-spin_with_part_entities     YES
-spin_center_display         NO
-text_height_factor          40
-save_display                YES
-save_model_display          SHADING_LOD
-save_drawing_picture_file   EMBED
+skip_small_surfaces         no
+shade_quality               8
+max_animation_time          0.3
+min_animation_steps         6
+datum_point_display         no
+display_axes                no
+display_planes              no
+display_coord_sys           no
+spin_with_part_entities     yes
+spin_with_orientation_center no
+spin_with_silhouettes       yes
+spin_center_display         no
+display_thick_cables        yes
+dim_inactive_components     never
+text_height_factor          60
+save_display                yes
+save_model_display          shading_lod
+save_drawing_picture_file   embed
 
-!----------------------------------------------accuracy and tolerance
+!--------------------------------------------- accuracy and tolerance
 default_dec_places          3
 sketcher_dec_places         3
-enable_absolute_accuracy    YES
+enable_absolute_accuracy    yes
 default_abs_accuracy        0.001
 
-tol_display                 YES
-tol_mode                    NOMINAL
-tolerance_class             MEDIUM
-tolerance_standard          ISO
+tol_display                 yes
+tol_mode                    nominal
+tolerance_class             medium
+tolerance_standard          iso
 angular_tol                 2 0.01
 linear_tol                  3 0.001
-tolerance_table_dir         E:\WKQ\Dropbox\Job\Configs\ProE_config\tol_tables\iso
+tolerance_table_dir         E:\WKQ\Configs\ProE_config\tol_tables\iso
 
-!-------------------------------------------------------------drawing
+!------------------------------------------------------------ drawing
 default_draw_scale          1
-allow_move_view_with_move   YES
-create_drawing_dims_only    YES
-parenthesize_ref_dim        YES
-sym_leader_orient_move_text YES
+allow_move_view_with_move   yes
+create_drawing_dims_only    yes
+parenthesize_ref_dim        yes
+sym_leader_orient_move_text yes
 
-format_setup_file           E:\WKQ\Dropbox\Job\Configs\ProE_config\configs\format.dtl
-drawing_setup_file          E:\WKQ\Dropbox\Job\Configs\ProE_config\configs\drawing.dtl
-pro_format_dir              E:\WKQ\Dropbox\Job\Configs\ProE_config\formats
-pro_dtl_setup_dir           E:\WKQ\Dropbox\Job\Configs\ProE_config\configs
-pro_note_dir                E:\WKQ\Dropbox\Job\Configs\ProE_config\notes
-pro_symbol_dir              E:\WKQ\Dropbox\Job\Configs\ProE_config\symbols
+format_setup_file           E:\WKQ\Configs\ProE_config\configs\drawing.dtl
+drawing_setup_file          E:\WKQ\Configs\ProE_config\configs\drawing.dtl
+pro_format_dir              E:\WKQ\Configs\ProE_config\formats
+!pro_format_dir             wtpub:// PLMUAT /存储库/标准件库/模板
+pro_dtl_setup_dir           E:\WKQ\Configs\ProE_config\configs
+pro_note_dir                E:\WKQ\Configs\ProE_config\notes
+pro_symbol_dir              E:\WKQ\Configs\ProE_config\symbols
 pro_font_dir                C:\WINDOWS\Fonts
 
-!----------------------------------------------------------------plot
-system_colors_file          E:\WKQ\Dropbox\Job\Configs\ProE_config\configs\syscol.scl
-search_path_file            E:\WKQ\Dropbox\Job\Configs\ProE_config\configs\search_path.pro
+!--------------------------------------------------------------- dir
+system_colors_file          E:\WKQ\Configs\ProE_config\configs\syscol.scl
+search_path_file            E:\WKQ\Configs\ProE_config\configs\search_path.pro
 
-pro_group_dir               E:\WKQ\Dropbox\Job\Configs\ProE_config\groups
-pro_library_dir             E:\WKQ\Dropbox\Job\Configs\ProE_config\library
-pro_material_dir            E:\WKQ\Dropbox\Job\Configs\ProE_config\materials
-pro_surface_finish_dir      E:\WKQ\Dropbox\Job\Configs\ProE_config\symbols\Roughness
-pro_texture_library         E:\WKQ\Dropbox\Job\Configs\ProE_config\library\graphiclib
+pro_group_dir               E:\WKQ\Configs\ProE_config\groups
+pro_library_dir             E:\WKQ\Configs\ProE_config\library
+!pro_library_dir             wtpub:// PLMUAT /存储库
+pro_material_dir            E:\WKQ\Configs\ProE_config\materials
+pro_surface_finish_dir      E:\WKQ\Configs\ProE_config\symbols\Roughness
+pro_texture_library         E:\WKQ\Configs\ProE_config\library\graphiclib
+pro_spool_dir               E:\WKQ\Configs\ProE_config\spools
+harn_start_model_dir        E:\WKQ\Configs\ProE_config\templates
 
-!-----------------------------------------------------------templates
-template_designasm          E:\WKQ\Dropbox\Job\Configs\ProE_config\templates\wkq_asm_design.asm
-template_sheetmetalpart     E:\WKQ\Dropbox\Job\Configs\ProE_config\templates\wkq_part_sheetmetal.prt
-template_solidpart          E:\WKQ\Dropbox\Job\Configs\ProE_config\templates\wkq_part_solid.prt
+!---------------------------------------------------------- templates
+template_designasm          E:\WKQ\Configs\ProE_config\templates\mmgs_asm_design.asm
+template_sheetmetalpart     E:\WKQ\Configs\ProE_config\templates\mmgs_part_sheetmetal.prt
+template_solidpart          E:\WKQ\Configs\ProE_config\templates\mmgs_part_solid.prt
+template_mfgmold            E:\WKQ\Configs\ProE_config\templates\mmgs_mfg_mold.asm
+template_mfgnc              E:\WKQ\Configs\ProE_config\templates\mmgs_mfg_nc.asm
+template_drawing            E:\WKQ\Configs\ProE_config\formats\hik-a3-h.frm
+template_harnesspart        E:\WKQ\Configs\ProE_config\templates\mmgs_part_solid.prt
+!template_solidpart         wtpub://PLMUAT/Libraries/标准件库/模板/mmkgs_part_solid.prt|A.1
 
-!----------------------------------------------------------------plot
+!--------------------------------------------------------------- plot
 plotter                     DESIGNJET600
-use_8_plotter_pens          YES
+use_8_plotter_pens          yes
 pen1_line_weight            4
 pen2_line_weight            2
 pen4_line_weight            1
-pro_plot_config_dir         E:\WKQ\Dropbox\Job\Configs\ProE_config\plotters
-pen_table_file              E:\WKQ\Dropbox\Job\Configs\ProE_config\plotters\wkq.pnt
-plot_to_scale_full_window   YES
+pro_plot_config_dir         E:\WKQ\Configs\ProE_config\plotters
+pen_table_file              E:\WKQ\Configs\ProE_config\plotters\wkq.pnt
+plot_to_scale_full_window   yes
 
-!-------------------------------------------------------import export
-step_export_format          AP214_IS
-intf_out_blanked_entities   NO
-intf_in_use_template_models YES
-!dxf_export_mapping_file     E:\WKQ\Dropbox\Job\Configs\ProE_config\configs\dxf_export.pro
-
-!---------------------------------------------------------------trail
-set_trail_single_step       YES
-trail_delay                 1
-trail_dir                   D:\Temp
-train_file_path             D:\Temp
+!------------------------------------------------------ import export
+step_export_format          ap203_is_ext
+intf_out_blanked_entities   no
+intf_in_use_template_models yes
+intf2d_out_acad_mtext       yes
+intf2d_out_acad_text_align  as_is
+intf2d_out_enhanced_ents    spline_and_hatch
+intf2d_out_open_log_window  no
+intf2d_out_pnt_ent          no
+intf_out_layer              none
+dwg_export_format           2000
+dxf_export_format           2000
+!dxf_export_mapping_file     E:\WKQ\Configs\ProE_config\configs\dxf_export.pro
 
 !--------------------------------------------------------------------
-! Author=WKQ
