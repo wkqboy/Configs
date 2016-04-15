@@ -1,0 +1,507 @@
+<!--
+    KQTool
+    Copyright 2016 by wang keqin
+    wkqboy@qq.com / wkqboy@gmail.com
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KQTool</title>
+    <meta charset="utf-8" />
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript">
+
+    (function(window){
+
+        "use strict";
+
+        var Excel = function(){
+
+            var connect = function(){
+                var app;
+                try{
+                    app = GetObject("", "EXCEL.application");
+                } catch(err){
+                    app = null;
+                }
+                if(app){
+                    if(app.WorkBooks.Count < 1){
+                        if(app.Visible == false){
+                            app.Quit();
+                        }
+                        app = null;
+                    }
+                    else
+                        app.Visible = true;
+                }
+                return app;
+            }
+
+            var create = function(){
+                var app;
+                try{
+                    app = GetObject("", "EXCEL.application");
+                } catch(err){
+                    app = null;
+                }
+                if(!app)
+                    try{
+                        app = new ActiveXObject("EXCEL.application");
+                    } catch(err){
+                        app = null;
+                    }
+                if(app){
+                    app.Visible = true;
+                    app.WorkBooks.Add();
+                }
+                return app;
+            }
+
+            return {
+                connect : connect,
+                create  : create
+                //range   : range
+            }
+        }();
+
+        /***********************************************************/
+        var CATIA = function(){
+            var connect = function(){
+                var app;
+                try{
+                    app = GetObject("", "CATIA.application");
+                } catch(err){
+                    return null;
+                }
+                return app;
+            }
+
+            var extractBOM = function(){
+                var catia = connect();
+                if(!catia){
+                    showMsg("请先运行CATIA !");
+                    return;
+                }
+                if(catia.windows.count < 1){
+                    showMsg("请打开一个产品 !");
+                    return;
+                }
+                var names = catia.ActiveDocument.Name.split(".");
+                if(names[names.length-1] != "CATProduct"){
+                    showMsg("当前文档不是一个产品文档 !");
+                    return;
+                }
+
+                showConfirm(catia.ActiveDocument.Name);
+            }
+
+            var updateModel = function(){
+                showMsg("updateModel doing...");
+            }
+
+            var deleteParameters = function(){
+                showMsg("deleteParameters deleteParameters deleteParameters doing...");
+            }
+
+            var fixComponents = function(){
+                showMsg("fixComponents doing...");
+            }
+
+            var partToProduct = function(){
+                showMsg("partToProduct doing...");
+            }
+
+            var compToProduct = function(){
+                showMsg("compToProduct doing...");
+            }
+
+
+            return {
+                extractBOM  : extractBOM,
+                updateModel : updateModel,
+                deleteParameters : deleteParameters,
+                fixComponents : fixComponents,
+                partToProduct : partToProduct,
+                compToProduct : compToProduct
+            }
+        }();
+
+        /***********************************************************/
+        var Creo = function(){
+            var purge = function(){
+                showMsg("purge");
+            }
+
+            var extractBOM = function(){
+                var xl = Excel.connect();
+                if(!xl)
+                    showConfirm("Create?", function(ret){
+                        if(ret == "Yes")
+                            xl = Excel.create();
+                    });
+            }
+
+            var updateModel = function(){
+                showMsg("UM...");
+            }
+
+            return {
+                purge       : purge,
+                extractBOM  : extractBOM,
+                updateModel : updateModel
+            }
+        }();
+
+        /***********************************************************/
+        var mouseOver = function(e){
+            var id = eventTarget(e).id;
+            if(id.slice(0, 3) == "Nav")
+                eventTarget(e).style.color = navActiveColor;
+            else
+                eventTarget(e).className = "btnOver";
+        }
+
+        var mouseLeave = function(e){
+            var id = eventTarget(e).id;
+            if(id == "NavCatia" || id == "NavCreo" || id == "NavAbout")
+                eventTarget(e).style.color = navNormalColor;
+            else
+                eventTarget(e).className = "btnNormal";
+        }
+
+        var mouseDown = function(e){
+            var id = eventTarget(e).id;
+            if(id == "NavCatia" || id == "NavCreo" || id == "NavAbout")
+                ;//eventTarget(e).className = "navActive";//style.color = activeColor;
+            else
+                eventTarget(e).className = "btnDown";
+        }
+
+        var mouseClicked = function(e){
+            eventTarget(e).blur();
+        }
+
+        var $ = function(str){
+            return document.getElementById(str);
+        }
+
+        var eventTarget = function(e){
+            if(e.srcElement)
+                return e.srcElement;
+            else
+                return e.target;
+        }
+
+        var addEvent = function(elem, event, handler){
+            if(elem){
+                if(elem.attachEvent)
+                    elem.attachEvent("on" + event, handler);
+                else if(elem.addEventListener)
+                    elem.addEventListener(event, handler);
+            }
+        }
+
+        var setButtonCallbacks = function(){
+            var btns = document.getElementsByTagName("button");
+            for(var i=0; i<btns.length; i++){
+                addEvent(btns[i], "mouseover", mouseOver);
+                addEvent(btns[i], "mouseleave", mouseLeave);
+                addEvent(btns[i], "mousedown", mouseDown);
+                addEvent(btns[i], "click", mouseClicked);
+            }
+        }
+
+        var bIds = ["NavCatia", "NavCreo", "NavAbout"];
+        var pIds = ["PanelCatia", "PanelCreo", "PanelAbout"];
+        var navActiveColor = "#3c3";
+        var navNormalColor = "#ccc";
+
+        var activeTab = function(name){
+            for(var i=0; i<bIds.length; i++){
+                if(name == bIds[i]){
+                    $(bIds[i]).style.borderBottomColor = navActiveColor;
+                    $(pIds[i]).style.display = "block";
+                }
+                else{
+                    $(bIds[i]).style.borderBottomColor = navNormalColor;
+                    $(pIds[i]).style.display = "none";
+                }
+            }
+        }
+
+        var nav = function(e){
+            activeTab(eventTarget(e).id);
+        }
+
+        var centerWithSize = function(w, h){
+            //window.visible = false;
+            window.resizeTo(w, h)
+            var x = (screen.width  - w) / 2;
+            var y = (screen.height - h) / 2;
+            window.moveTo(x, y);
+            //window.visible = true;
+        }
+
+        var msgCallback;
+
+        var closeMsg = function(e){
+            $("Msg").style.display = "none";
+            var ret = "";
+            if(!e){
+                return;
+            }
+
+            switch(eventTarget(e).id){
+                case "MsgOK":
+                    ret = "OK";
+                    break;
+                case "MsgYes":
+                    ret = "Yes";
+                    break;
+                case "MsgNo":
+                    ret = "No";
+                    break;
+                default:
+                    ret = "";
+            }
+            if(msgCallback)
+                msgCallback(ret);
+
+            msgCallback = null;
+        }
+
+        var showMsg = function(str, fn){
+            if(fn){
+                msgCallback = fn;
+            }
+
+            $("MsgContent").innerHTML = str;
+            $("MsgOK").style.display  = "block";
+            $("MsgYes").style.display = "none";
+            $("MsgNo").style.display  = "none";
+
+            $("Msg").style.display = "block";
+        }
+
+        var showConfirm = function(str, fn){
+            if(fn){
+                msgCallback = fn;
+            }
+
+            $("MsgContent").innerHTML = str;
+            $("MsgOK").style.display  = "none";
+            $("MsgYes").style.display = "inline";
+            $("MsgNo").style.display  = "inline";
+
+            $("Msg").style.display = "block";
+        }
+
+        var connectUIEvent = function(){
+            document.body.oncontextmenu =
+            document.body.ondragstart   =
+            document.body.onselectstart =
+            function(){ return false };
+
+            setButtonCallbacks();
+
+            addEvent($("NavCatia"), "click", nav);
+            addEvent($("NavCreo"),  "click", nav);
+            addEvent($("NavAbout"), "click", nav);
+
+            addEvent($("MsgOK"),  "click", closeMsg);
+            addEvent($("MsgYes"), "click", closeMsg);
+            addEvent($("MsgNo"),  "click", closeMsg);
+        }
+
+        var connectFuncEvent = function(){
+            //CATIA
+            addEvent($("ExtractBOM"),       "click", CATIA.extractBOM);
+            addEvent($("UpdateModel"),      "click", CATIA.updateModel);
+            addEvent($("DeleteParameters"), "click", CATIA.deleteParameters);
+            addEvent($("FixComponents"),    "click", CATIA.fixComponents);
+            addEvent($("PartToProduct"),    "click", CATIA.partToProduct);
+            addEvent($("CompToProduct"),    "click", CATIA.compToProduct);
+
+            //Creo
+            addEvent($("CreoPurge"),       "click", Creo.purge);
+            addEvent($("CreoExtractBOM"),  "click", Creo.extractBOM);
+            addEvent($("CreoUpdateModel"), "click", Creo.updateModel);
+        }
+
+        var init = function(){
+            connectUIEvent();
+            connectFuncEvent();
+            activeTab("NavCatia");
+            centerWithSize(230, 350);
+        }
+
+        var loadHandler = function(){
+            init();
+            return false;
+        }
+
+        var errorHandler = function(msg, url, line){
+            alert("在第" + line + "行发现错误:\n" + msg);
+            return true;
+        }
+
+        window.onload = loadHandler;
+        window.onerror = errorHandler;
+
+    })( window );
+
+    </script>
+
+    <style>
+        html, body {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            background: #135;
+            color: #ccc;
+            font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
+            font-size: 12px;
+            cursor: normal;
+        }
+
+        button {
+            background: #357;
+            color: #ccc;
+            border: 1px solid #ccc;
+            width: 100%;
+            margin: 2px auto;
+            padding: 4px auto;
+        }
+        .btnOver {
+            background: #579;
+        }
+        .btnDown {
+            background: #135;
+        }
+
+        p {
+            margin: 1px;
+            padding: 1px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #ccc;
+            cursor: normal;
+        }
+
+        #Main {
+            padding: 10px;
+        }
+
+        .navBtn {
+            background: none;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            width: 33.0%;
+            font-weight: bold;
+        }
+
+        #Panels {
+            margin: 10px auto;
+            text-align: center;
+        }
+
+        #Msg {
+            display: none;
+        }
+
+        #MsgMask, #MsgContainer {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 10px;
+        }
+
+        #MsgMask {
+            background: #333;
+            z-index: 100;
+            filter: alpha(opacity=80);
+            opacity: 0.8;
+        }
+
+        #MsgContainer {
+            z-index: 200;
+            height: 100px;
+            width: 80%;
+            margin: 50px 10%;
+            background: #246;
+            border: 1px solid #579;
+        }
+
+        #MsgContent {
+            font-size: 16px;
+            margin: 20px auto;
+        }
+
+        #MsgYes, #MsgNo {
+            width: 49%;
+        }
+    </style>
+
+    <HTA:Application
+        border: thin
+        maximizebutton="no"
+        minimizebutton="yes"
+        icon = ""
+    >
+</head>
+
+<body scroll="no">
+    <div id="Main">
+    <div id="Headers">
+        <button hidefocus id="NavCatia" class="navBtn"> CATIA </button>
+        <button hidefocus id="NavCreo"  class="navBtn"> Creo </button>
+        <button hidefocus id="NavAbout" class="navBtn"> About </button>
+    </div>
+
+    <div id="Panels">
+        <div id="PanelCatia">
+            <button id="ExtractBOM"> 生成/更新 BOM </button>
+            <button id="UpdateModel"> 从BOM更新模型参数 </button>
+            <br/>
+            <button id="DeleteParameters"> 删除所有参数 </button>
+            <br/>
+            <button id="FixComponents"> 固定元件在当前位置 </button>
+            <br/>
+            <button id="PartToProduct"> 将Part转换为Product </button>
+            <button id="CompToProduct"> 将Component替换为Product </button>
+        </div>
+
+        <div id="PanelCreo">
+            <button id="CreoPurge"> 清理文件 </button><br/>
+            <pre>以下功能需在嵌入浏览器内运行</pre>
+            <button id="CreoExtractBOM"> 生成/更新 BOM </button>
+            <button id="CreoUpdateModel"> 从BOM更新模型参数 </button>
+        </div>
+
+        <div id="PanelAbout">
+            <p>Version: V1.0</p>
+            <p>Copyright 2016 by Keqin Wang</p>
+            <a href=mailto:wkqboy@qq.com>wkqboy@qq.com</a><br/>
+            <a href=mailto:wkqboy@gmail.com>wkqboy@gmail.com</a>
+        </div>
+    </div>
+
+    <div id="Msg">
+        <div id="MsgMask"></div>
+        <div id="MsgContainer">
+            <div id="MsgContent">Message</div>
+            <button id="MsgOK">OK</button>
+            <button id="MsgYes">Yes</button>
+            <button id="MsgNo">No</button>
+        </div>
+    </div>
+    </div>
+</body>
+</html>
